@@ -1,0 +1,20 @@
+root = true
+
+[*]
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+end_of_line = lf
+max_line_length = 120
+
+[*.{py,html}]
+indent_style = space
+indent_size = 4
+
+[LICENSE]
+insert_final_newline = false
+
+[Makefile]
+max_line_length = 89
+indent_style = tab
+
