@@ -8,6 +8,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from . import __version__, handlers, middlewares, v1
 from .settings import Environment, settings
+from .logger import logger
 
 
 @asynccontextmanager
@@ -19,6 +20,7 @@ async def lifespan(app: FastAPI):
     :param app: FastAPI
 
     """
+    logger.info('Startup FastID service', extra={'environment': settings.environment.lower()})
     yield
 
 
@@ -67,7 +69,6 @@ if settings.cors_enable:
 
 # App middleware
 app.add_middleware(middlewares.Middleware)
-
 
 app.include_router(handlers.healthcheck.router)
 app.include_router(v1.users.router, prefix='/api/v1')
