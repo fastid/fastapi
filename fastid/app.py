@@ -1,15 +1,19 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.responses import PlainTextResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import __version__, handlers, middlewares, v1
 from .settings import Environment, settings
 from .logger import logger
-
+from .exceptions import exc_handlers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,7 +47,15 @@ app = FastAPI(
         'url': 'https://github.com/fastid/fastapi/blob/main/LICENSE',
     },
     contact={'name': 'Github', 'url': 'https://github.com/fastid/'},
+    exception_handlers=exc_handlers,
 )
+
+
+# @app.exception_handler(StarletteHTTPException)
+# async def custom_http_exception_handler(request, exc):
+#     print(f"OMG! An HTTP error!: {repr(exc)}")
+#     return await http_exception_handler(request, exc)
+
 
 # Prometheus metrics
 Instrumentator(excluded_handlers=['/healthcheck/', '/metrics']).instrument(
