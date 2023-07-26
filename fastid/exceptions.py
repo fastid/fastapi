@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import ORJSONResponse
+from opentelemetry.trace import get_current_span
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -51,7 +52,7 @@ def exception(exc_type: ExceptionType):
                     errors[field] = msg
 
                 logger.debug('Error', extra={'field': field, 'type_err': type_err, 'ctx': ctx})
-                return ORJSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={'errors': errors})
+            return ORJSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={'errors': errors})
         else:
             return ORJSONResponse(
                 status_code=err.status_code,
