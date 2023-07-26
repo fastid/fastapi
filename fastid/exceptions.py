@@ -1,7 +1,6 @@
-from typing import TypeVar, Union, Callable, Any, Coroutine, Type
+from typing import Any, Callable, Coroutine, Type, TypeVar, Union
 
-from fastapi import HTTPException
-from fastapi import status
+from fastapi import HTTPException, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import ORJSONResponse
 from opentelemetry.trace import get_current_span
@@ -34,7 +33,6 @@ def exception(exc_type: ExceptionType):
         err: (
             RequestValidationError |
             NotFoundException
-
         ),
     ):
         if isinstance(err, RequestValidationError):
@@ -53,11 +51,11 @@ def exception(exc_type: ExceptionType):
 
                 logger.debug('Error', extra={'field': field, 'type_err': type_err, 'ctx': ctx})
             return ORJSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={'errors': errors})
-        else:
-            return ORJSONResponse(
-                status_code=err.status_code,
-                content={'error': err.message},
-            )
+
+        return ORJSONResponse(
+            status_code=err.status_code,
+            content={'error': err.message},
+        )
     return wrapper
 
 

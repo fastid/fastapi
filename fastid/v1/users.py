@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from starlette import status
 
 from .. import typing
-from . import schemes
 from ..exceptions import NotFoundException
+from . import schemes
 
 router = APIRouter(tags=['Users'], prefix='/users')
 
@@ -14,7 +14,6 @@ router = APIRouter(tags=['Users'], prefix='/users')
     name='create_user_by_invite_link_to_email',
 )
 async def create_user_invate_email(body: schemes.RequestCreateUserByEmail) -> dict:
-    raise NotFoundException('test')
     return {}
 
 

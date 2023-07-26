@@ -7,13 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
-from starlette.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.responses import PlainTextResponse
 
 from . import __version__, handlers, middlewares, v1
-from .settings import Environment, settings
-from .logger import logger
 from .exceptions import exc_handlers
+from .logger import logger
+from .settings import Environment, settings
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
