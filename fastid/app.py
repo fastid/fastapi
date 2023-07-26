@@ -1,14 +1,10 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, status
-from fastapi.exception_handlers import http_exception_handler
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
-from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.responses import PlainTextResponse
 
 from . import __version__, handlers, middlewares, v1
 from .exceptions import exc_handlers
@@ -51,19 +47,11 @@ app = FastAPI(
     exception_handlers=exc_handlers,
 )
 
-
-# @app.exception_handler(StarletteHTTPException)
-# async def custom_http_exception_handler(request, exc):
-#     print(f"OMG! An HTTP error!: {repr(exc)}")
-#     return await http_exception_handler(request, exc)
-
-
 # Prometheus metrics
 Instrumentator(excluded_handlers=['/healthcheck/', '/metrics']).instrument(
     app,
     metric_namespace=settings.app_name.lower(),
 ).expose(app, include_in_schema=False)
-
 
 # Middlewares
 app.add_middleware(

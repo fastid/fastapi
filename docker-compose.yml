@@ -60,9 +60,9 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_USER=${DB_USER:-postgres}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
-      - POSTGRES_DB=${DB_DATABASE:-postgres}
+      - POSTGRES_USER=${DB_USER:-user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
+      - POSTGRES_DB=${DB_DATABASE:-database}
     volumes:
       - ./.data/postgres:/var/lib/postgresql/data
     healthcheck:
@@ -151,9 +151,9 @@ services:
     environment:
       - DB_HOST=fastid-postgres
       - DB_PORT=${DB_USER:-5432}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_DATABASE=${DB_DATABASE:-postgres}
+      - DB_USER=${DB_USER:-user}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_DATABASE=${DB_DATABASE:-database}
     networks:
       - fastid
     profiles:

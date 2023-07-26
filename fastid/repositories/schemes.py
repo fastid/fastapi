@@ -7,17 +7,34 @@ from ..typing import Email, Phone, ProfileID, SessionID, UserID
 
 
 class Base(DeclarativeBase):
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now(), onupdate=func.now())
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=func.now(),
+        sort_order=20,
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=func.now(),
+        onupdate=func.now(),
+        sort_order=30,
+    )
+
+    deleted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        sort_order=40,
+    )
 
 
 class Users(Base):
     __tablename__ = 'users'
 
-    user_id: Mapped[UserID] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    email: Mapped[Email] = mapped_column(String(200), unique=True, nullable=True)
-    # username: Mapped[str] = mapped_column(String(200), unique=True, nullable=True)
+    user_id: Mapped[UserID] = mapped_column(Integer, primary_key=True, autoincrement=True, sort_order=10)
+    username: Mapped[str] = mapped_column(String(200), unique=True, nullable=True, sort_order=50)
+    email: Mapped[Email] = mapped_column(String(200), unique=True, nullable=True, sort_order=60)
+    password: Mapped[str] = mapped_column(String(200), nullable=True, sort_order=70)
+
     # profile: Mapped['Profiles'] = relationship('Profiles', back_populates='user', lazy='joined')
 
 
