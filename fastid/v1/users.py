@@ -10,7 +10,7 @@ router = APIRouter(tags=['Users'], prefix='/users')
 @router.post(
     path='/email/',
     summary='Create a user by email address',
-    name='create_user_by_email_address',
+    name='create_user_by_email',
     status_code=status.HTTP_201_CREATED,
 )
 async def create_user_by_email(body: schemes.RequestCreateUserByEmail) -> schemes.ResponseEmpty:
