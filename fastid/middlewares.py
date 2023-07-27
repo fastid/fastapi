@@ -29,7 +29,7 @@ class Middleware:
 
         request = Request(scope=scope)
 
-        cxt_ip_token = cxt_ip.set('0.0.0.0')
+        cxt_ip_token = cxt_ip.set('127.0.0.1')
         cxt_request_id_token = cxt_request_id.set(request.headers.get('request-id', str(uuid4())))
 
         # IP

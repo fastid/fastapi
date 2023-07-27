@@ -120,6 +120,13 @@ class Settings(BaseSettings):
     http_client_max_connections: int = 10
     """ Maximum number of allowable connections """
 
+    recaptcha_enable: bool = True
+    recaptcha_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+
+    password_policy_max_length: int = 200
+    password_policy_min_length: int = 5
+
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',
         env_file_encoding='utf-8',
