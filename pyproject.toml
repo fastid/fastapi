@@ -58,7 +58,8 @@ testpaths = [
 ]
 env = [
     "PYTEST = True",
-    "recaptcha_enable = True"
+    "recaptcha_enable = True",
+    "cors_enable = True"
 ]
 filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources.*",

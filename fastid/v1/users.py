@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from .. import services
 from ..settings import settings
@@ -11,6 +11,7 @@ router = APIRouter(tags=['Users'], prefix='/users')
     path='/email/',
     summary='Create a user by email address',
     name='create_user_by_email_address',
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_user_by_email(body: schemes.RequestCreateUserByEmail) -> schemes.ResponseEmpty:
     if settings.recaptcha_enable:

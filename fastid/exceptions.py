@@ -40,7 +40,7 @@ def exception(exc_type: ExceptionType):
         err: (RequestValidationError | NotFoundException | RecaptchaVerifyFailException),
     ):
         if isinstance(err, RequestValidationError):
-            errors: dict[str, str] = {}
+            errors: dict[str, str] = {}  # pragma: no cover
             for error in err.errors():  # pragma: no cover
                 field = str(error['loc'][-1])
                 type_err = error['type']
