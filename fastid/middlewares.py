@@ -40,8 +40,6 @@ class Middleware:
         ctx_api_version_token = cxt_api_version.set(0)
         if 'v1' in request.url.path.split('/', 3):
             ctx_api_version_token = cxt_api_version.set(1)
-        elif 'v2' in request.url.path.split('/', 3):
-            ctx_api_version_token = cxt_api_version.set(2)
 
         path = request.scope.get('path')
         method = request.scope.get('method')
@@ -127,4 +125,3 @@ class Middleware:
             cxt_ip.reset(cxt_ip_token)
             cxt_api_version.reset(ctx_api_version_token)
             cxt_request_id.reset(cxt_request_id_token)
-

@@ -1,10 +1,6 @@
-from datetime import date
 from enum import Enum
-from typing import Annotated, Any
 
-from pydantic import BaseModel, Field, PlainValidator, AfterValidator, model_validator, field_validator
-from pydantic_core.core_schema import ValidationInfo, FieldValidationInfo
-from pydantic_extra_types.phone_numbers import PhoneNumber
+from pydantic import BaseModel, Field
 
 from .. import typing
 from ..settings import settings
@@ -34,17 +30,6 @@ class RequestCreateUserByEmail(BaseModel):
     # last_name: str = Field(..., title='Last name', description='Last name', max_length=200)
     # date_birth: date = Field(None, title='Date birth', description='Date birth')
     # gender: Gender = Field(None, title='Gender', description='Gender')
-
-
-# class RequestCreateUserByUsername(BaseModel):
-#     username: str = Field(
-#         ...,
-#         title='Username',
-#         description='Username',
-#         min_length=1,
-#         max_length=50,
-#         examples=['username'],
-#     )
 
 
 class ResponseEmpty(BaseModel):

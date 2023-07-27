@@ -58,9 +58,6 @@ class Sessions(Base):
     expire_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), sort_order=50)
     data: Mapped[dict] = mapped_column(JSON(), nullable=True, sort_order=60)
     user_id: Mapped[UserID] = mapped_column(
-        Integer,
-        ForeignKey('users.user_id', onupdate='CASCADE', ondelete='CASCADE'),
-        nullable=True,
-        sort_order=70
+        Integer, ForeignKey('users.user_id', onupdate='CASCADE', ondelete='CASCADE'), nullable=True, sort_order=70
     )
     user: Mapped['Users'] = relationship('Users', foreign_keys=user_id, lazy='select')

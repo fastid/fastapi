@@ -38,13 +38,9 @@ class RecaptchaVerifyFailException(MainException):
 def exception(exc_type: ExceptionType):
     async def wrapper(
         request: Request,
-        err: (
-            RequestValidationError |
-            NotFoundException
-        ),
+        err: (RequestValidationError | NotFoundException | RecaptchaVerifyFailException),
     ):
         if isinstance(err, RequestValidationError):
-
             errors: dict[str, str] = {}
             for error in err.errors():  # pragma: no cover
                 field = str(error['loc'][-1])
@@ -64,10 +60,12 @@ def exception(exc_type: ExceptionType):
             status_code=err.status_code,
             content={'error': err.message},
         )
+
     return wrapper
 
 
 exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Coroutine[Any, Any, Response]]] | None = {
     RequestValidationError: exception(RequestValidationError),
     NotFoundException: exception(NotFoundException),
+    RecaptchaVerifyFailException: exception(RecaptchaVerifyFailException),
 }

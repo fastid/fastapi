@@ -7,7 +7,6 @@ from fastapi import FastAPI
 
 from fastid import repositories
 from fastid.app import app as application
-from fastid.http_base_client import http_base_client
 
 
 @pytest.fixture()
