@@ -1,7 +1,4 @@
-import httpx
 from fastapi import APIRouter
-
-from ..http_base_client import http_base_client
 
 router = APIRouter(tags=['Health check'])
 

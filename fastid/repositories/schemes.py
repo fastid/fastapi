@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, BigInteger, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from ..typing import Email, Phone, ProfileID, SessionID, UserID
+from ..typing import Email, ProfileID, SessionID, UserID
 
 
 class Base(DeclarativeBase):

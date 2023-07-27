@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
 from .. import services
-from ..exceptions import RecaptchaVerifyFailException
 from ..settings import settings
 from . import schemes
 

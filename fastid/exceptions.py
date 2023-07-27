@@ -3,7 +3,6 @@ from typing import Any, Callable, Coroutine, Type, TypeVar, Union
 from fastapi import HTTPException, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import ORJSONResponse
-from opentelemetry.trace import get_current_span
 from starlette.requests import Request
 from starlette.responses import Response
 

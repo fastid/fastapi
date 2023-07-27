@@ -1,6 +1,6 @@
 from typing import NewType
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 
 UserID = NewType('UserID', int)
 ProfileID = NewType('ProfileID', int)
