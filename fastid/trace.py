@@ -28,7 +28,7 @@ else:  # pragma: no cover
     processor = BatchSpanProcessor(
         OTLPSpanExporter(
             endpoint=f'http://{settings.opentelemetry_host}:{settings.opentelemetry_port}',
-        )
+        ),
     )
 
 tracer_provider.add_span_processor(processor)

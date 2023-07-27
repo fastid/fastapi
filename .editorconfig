@@ -17,4 +17,3 @@ insert_final_newline = false
 [Makefile]
 max_line_length = 89
 indent_style = tab
-

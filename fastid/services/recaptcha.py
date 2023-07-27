@@ -1,9 +1,9 @@
 import httpx
 
+from ..context import cxt_ip
 from ..exceptions import RecaptchaVerifyFailException
 from ..http_base_client import http_base_client
 from ..settings import settings
-from ..context import cxt_ip
 
 URL = 'https://www.google.com/'
 
@@ -22,7 +22,7 @@ async def check_verify(recaptcha_verify: str) -> bool:
 
         response = await client.post(url='recaptcha/api/siteverify', params=params)
 
-        if response.json().get('success'):
-            return True
+        if not response.json().get('success'):
+            raise RecaptchaVerifyFailException
 
-        raise RecaptchaVerifyFailException()
+        return True

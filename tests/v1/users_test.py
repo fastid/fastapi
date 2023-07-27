@@ -16,4 +16,3 @@ async def test_users_create_by_email_fail(client: httpx.AsyncClient, mocker):
         )
         assert response.status_code == 400
         assert response.json() == {'error': 'Recaptcha verify fail'}
-
