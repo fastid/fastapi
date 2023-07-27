@@ -1,5 +1,6 @@
 import httpx
 
+from ..exceptions import RecaptchaVerifyFailException
 from ..http_base_client import http_base_client
 from ..settings import settings
 from ..context import cxt_ip
@@ -24,5 +25,4 @@ async def check_verify(recaptcha_verify: str) -> bool:
         if response.json().get('success'):
             return True
 
-        return False
-
+        raise RecaptchaVerifyFailException()

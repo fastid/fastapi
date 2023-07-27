@@ -75,6 +75,10 @@ async def hook_response(response: httpx.Response):
         attributes={
             SpanAttributes.HTTP_STATUS_CODE: response.status_code,
             SpanAttributes.HTTP_RESPONSE_CONTENT_LENGTH: int(response.headers.get('content-length', 0)),
+            'http_version': response.http_version,
+            'is_error': response.is_error,
+            'is_success': response.is_success,
+            'is_redirect': response.is_redirect,
         },
     )
 

@@ -48,9 +48,9 @@ __handler_stream_stderr.setFormatter(__formatter)
 
 __handler_stream_stdout.addFilter(InfoFilter())
 
-__log = logging.getLogger()
+__log = logging.getLogger(settings.log_name)
 __log.setLevel(settings.log_level.upper())
 __log.addHandler(__handler_stream_stdout)
 __log.addHandler(__handler_stream_stderr)
 
-logger = logging.getLogger()
+logger = logging.getLogger(settings.log_name)

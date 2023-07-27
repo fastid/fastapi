@@ -27,6 +27,14 @@ class NotFoundException(MainException):
         self.error = message
 
 
+class RecaptchaVerifyFailException(MainException):
+    """Recaptcha verify fail"""
+
+    def __init__(self, message: str = 'Recaptcha verify fail'):
+        super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST)
+        self.error = message
+
+
 def exception(exc_type: ExceptionType):
     async def wrapper(
         request: Request,
