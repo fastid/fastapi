@@ -57,7 +57,7 @@ testpaths = [
     "tests",
 ]
 env = [
-#    "PYTEST = True",
+    "PYTEST = True",
     "recaptcha_enable = True",
     "cors_enable = True"
 ]
