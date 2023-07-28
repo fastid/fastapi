@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = {extras = ["all"], version = "^0.100.0"}
+fastapi = {extras = ["all"], version = "^0.100.1"}
 httpx = {extras = ["http2"], version = "^0.24.1"}
 uvicorn = "^0.23.1"
 asgi-lifespan = "^2.1.0"
