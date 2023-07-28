@@ -73,6 +73,7 @@ skip-string-normalization = true
 
 [tool.isort]
 profile = "black"
+diff = "True"
 
 [tool.ruff]
 line-length = 120

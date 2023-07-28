@@ -94,7 +94,7 @@ jobs:
 
       - name: Linter with isort
         run: |
-          poetry run isort . --check --profile black --diff
+          poetry run isort . --check
 
   ruff:
     name: "Linter with ruff"
