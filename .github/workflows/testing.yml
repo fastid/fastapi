@@ -52,7 +52,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      - name: "Installing black"
+      - name: "Installing poetry"
         run: pip install poetry
 
       - name: "Installing dependencies"
@@ -84,7 +84,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      - name: "Installing isort"
+      - name: "Installing poetry"
         run: pip install poetry
 
       - name: "Installing dependencies"
@@ -148,7 +148,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      - name: "Installing mypy"
+      - name: "Installing poetry"
         run: pip install poetry
 
       - name: "Installing dependencies"
