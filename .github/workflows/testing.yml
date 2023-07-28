@@ -88,6 +88,7 @@ jobs:
 
       - name: "Installing dependencies"
         run: |
+          poetry config virtualenvs.create false
           poetry env info
           poetry install
 
