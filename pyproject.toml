@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "fastid"
-version = "0.0.1"
+name = "FastID"
+version = "0.1.0"
 description = "Authorization and authentication service"
 authors = ["Kostya Ten <kostya@yandex.ru>"]
 readme = "README.md"
