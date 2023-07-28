@@ -92,7 +92,7 @@ class Middleware:
             try:
                 await self.app(scope, receive, send_wrapper)
             except Exception as exc:
-                if settings.environment == Environment.development:
+                if settings.environment == Environment.development:  # pragma: no cover
                     traceback.print_exc()
 
                 response = ORJSONResponse(
