@@ -1,5 +1,3 @@
-import httpx
-
 from ..context import cxt_ip
 from ..exceptions import RecaptchaVerifyFailException
 from ..http_base_client import http_base_client

@@ -55,11 +55,12 @@ jobs:
         run: pip install poetry
 
       - name: "Installing dependencies"
-        run: poetry install
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
 
       - name: Linter with black
         run: |
-          poetry config virtualenvs.create false
           poetry run black --check .
 
 
@@ -86,14 +87,16 @@ jobs:
             ${{ runner.os }}-poetry-
 
       - name: "Installing poetry"
-        run: pip install poetry
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
 
       - name: "Installing dependencies"
         run: poetry install
 
       - name: Linter with ruff
         run: |
-          poetry config virtualenvs.create false
           poetry run ruff check .
 
 
@@ -123,7 +126,9 @@ jobs:
         run: pip install poetry
 
       - name: "Installing dependencies"
-        run: poetry install
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
 
       - name: Linter with mypy
         run: |
@@ -157,7 +162,9 @@ jobs:
         run: pip install poetry
 
       - name: "Installing dependencies"
-        run: poetry install
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
 
       - name: "Testing code"
         run: |

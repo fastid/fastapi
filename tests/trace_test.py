@@ -1,5 +1,3 @@
-from pytest_httpx import HTTPXMock
-
 from fastid.trace import decorator_trace
 
 

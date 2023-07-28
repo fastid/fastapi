@@ -83,7 +83,7 @@ exclude = [
 per-file-ignores = {"__init__.py" = ["F401"]}
 select = [
     "I", "N", "ASYNC", "B", "A", "COM", "C4", "DTZ", "T10", "EXE", "FA", "ISC",
-    "ICN", "PIE", "Q", "RSE", "RET", "SLF", "TD", "FIX",
+    "ICN", "PIE", "Q", "RSE", "RET", "SLF", "TD", "FIX", "F",
 ]
 
 [tool.ruff.flake8-quotes]

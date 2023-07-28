@@ -1,5 +1,4 @@
 import httpx
-from pytest_httpx import HTTPXMock
 from pytest_mock import MockerFixture
 
 from fastid.exceptions import RecaptchaVerifyFailException

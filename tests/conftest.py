@@ -5,7 +5,6 @@ import pytest
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 
-from fastid import repositories
 from fastid.app import app as application
 
 
