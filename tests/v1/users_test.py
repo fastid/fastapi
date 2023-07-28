@@ -1,5 +1,6 @@
 import httpx
 from pytest_httpx import HTTPXMock
+from pytest_mock import MockerFixture
 
 from fastid.exceptions import RecaptchaVerifyFailException
 
@@ -16,7 +17,7 @@ async def test_users_create(client: httpx.AsyncClient):
     assert response.status_code == 201
 
 
-async def test_users_create_by_email_fail(client: httpx.AsyncClient, mocker):
+async def test_users_create_by_email_fail(client: httpx.AsyncClient, mocker: MockerFixture):
     with mocker.patch('fastid.services.recaptcha.check_verify', side_effect=RecaptchaVerifyFailException()):
         response = await client.post(
             url='/api/v1/users/email/',
