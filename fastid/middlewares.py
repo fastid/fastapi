@@ -102,7 +102,7 @@ class Middleware:
 
                 extra['exception.message'] = f'{exc}'
 
-                if settings.environment != Environment.development:
+                if settings.environment != Environment.development:  # pragma: no cover
                     logger.error(msg=f'{request.method} {request.url.path}', extra=extra)
 
                 span.record_exception(exception=exc)
