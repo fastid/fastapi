@@ -3,14 +3,13 @@ name: Testing
 on:
   push:
     branches:
-      - 'hotfix/**'
       - main
   pull_request:
     branches:
       - main
 
 env:
-  PYTHON_VERSION: 3.11.4 # See https://github.com/actions/python-versions/blob/main/versions-manifest.json
+  PYTHON_VERSION: 3.11.1 # See https://github.com/actions/python-versions/blob/main/versions-manifest.json
 
 
 jobs:
