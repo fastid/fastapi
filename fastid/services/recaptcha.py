@@ -10,8 +10,6 @@ URL = 'https://www.google.com/'
 
 async def check_verify(recaptcha_verify: str) -> bool:
     async with http_base_client(base_url=URL) as client:
-        client: httpx.AsyncClient
-
         params = {
             'secret': settings.recaptcha_secret_key,
             'response': recaptcha_verify,
