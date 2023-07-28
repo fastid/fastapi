@@ -71,10 +71,6 @@ line-length = 120
 target-version = ["py311"]
 skip-string-normalization = true
 
-[tool.isort]
-profile = "black"
-diff = "True"
-
 [tool.ruff]
 line-length = 120
 target-version = "py311"
@@ -86,7 +82,7 @@ exclude = [
 ]
 per-file-ignores = {"__init__.py" = ["F401"]}
 select = [
-    "N", "ASYNC", "B", "A", "COM", "C4", "DTZ", "T10", "EXE", "FA", "ISC",
+    "I", "N", "ASYNC", "B", "A", "COM", "C4", "DTZ", "T10", "EXE", "FA", "ISC",
     "ICN", "PIE", "Q", "RSE", "RET", "SLF", "TD", "FIX",
 ]
 

@@ -59,42 +59,8 @@ jobs:
 
       - name: Linter with black
         run: |
-          poetry run black --check .
-
-  isort:
-    name: "Linter with isort"
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          check-latest: true
-
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
-
-      - name: "Installing poetry"
-        run: pip install poetry
-
-      - name: "Installing dependencies"
-        run: |
           poetry config virtualenvs.create false
-          poetry env info
-          poetry install
-
-      - name: Linter with isort
-        run: |
-          poetry run isort . --check
+          poetry run black --check .
 
   ruff:
     name: "Linter with ruff"
@@ -126,6 +92,7 @@ jobs:
 
       - name: Linter with ruff
         run: |
+          poetry config virtualenvs.create false
           poetry run ruff check .
 
   mypy:
