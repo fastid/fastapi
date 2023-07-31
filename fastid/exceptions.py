@@ -34,6 +34,18 @@ class RecaptchaVerifyFailException(MainException):
         self.error = message
 
 
+class JWTAudienceException(MainException):
+    def __init__(self, message: str = "JWT Audience doesn't match"):
+        super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST)
+        self.error = message
+
+
+class JWTSignatureExpiredException(MainException):
+    def __init__(self, message: str = 'JWT Signature has expired'):
+        super().__init__(message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.error = message
+
+
 def exception(exc_type: ExceptionType):
     async def wrapper(
         request: Request,

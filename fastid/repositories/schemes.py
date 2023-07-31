@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Uuid, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from ..typing import Email, ProfileID, SessionID, UserID
@@ -54,7 +54,7 @@ class Profiles(Base):
 class Sessions(Base):
     __tablename__ = 'sessions'
 
-    session_id: Mapped[SessionID] = mapped_column(Integer, primary_key=True, autoincrement=True, sort_order=10)
+    session_id: Mapped[SessionID] = mapped_column(Uuid, primary_key=True, sort_order=10)
     expire_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), sort_order=50)
     data: Mapped[dict] = mapped_column(JSON(), nullable=True, sort_order=60)
     user_id: Mapped[UserID] = mapped_column(

@@ -6,7 +6,7 @@ from ..settings import settings
 URL = 'https://www.google.com/'
 
 
-async def check_verify(recaptcha_verify: str) -> bool:
+async def check_verify(*, recaptcha_verify: str) -> bool:
     async with http_base_client(base_url=URL) as client:
         params = {
             'secret': settings.recaptcha_secret_key,

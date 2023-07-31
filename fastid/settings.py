@@ -30,6 +30,17 @@ class OpentelemetryProcess(str, Enum):
     stdout: str = 'stdout'
 
 
+class JWTAlgorithm(str, Enum):
+    HS256: str = 'HS256'
+    HS384: str = 'HS384'
+    HS512: str = 'HS512'
+
+    @classmethod
+    def get_all(cls) -> list[str]:
+        """Returns a list of all signature methods"""
+        return [c.value for c in cls]
+
+
 class Settings(BaseSettings):
     app_name: str = 'FastID'
 
@@ -126,6 +137,10 @@ class Settings(BaseSettings):
 
     password_policy_max_length: int = 200
     password_policy_min_length: int = 5
+
+    jwt_secret: SecretStr = SecretStr('jwt_secret')
+    jwt_algorithm: JWTAlgorithm = JWTAlgorithm.HS256
+    jwt_iss: str = app_name
 
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',

@@ -5,6 +5,7 @@ import pytest
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 
+from fastid import repositories
 from fastid.app import app as application
 
 
@@ -14,18 +15,17 @@ async def app() -> AsyncGenerator[FastAPI, None]:
         yield application
 
 
-# @pytest.fixture()
-# async def db_migrations() -> AsyncGenerator[None, None]:
-#     """
-#     Fixture for migrations db
-#
-#     :return: AsyncGenerator
-#     """
-#     async with repositories.db.engine.begin() as conn:
-#         await conn.run_sync(repositories.schemes.Base.metadata.create_all)
-#         yield
-#         await conn.run_sync(repositories.schemes.Base.metadata.drop_all)
-#
+@pytest.fixture()
+async def db_migrations() -> AsyncGenerator[None, None]:
+    """
+    Fixture for migrations db
+
+    :return: AsyncGenerator
+    """
+    async with repositories.db.engine.begin() as conn:
+        await conn.run_sync(repositories.schemes.Base.metadata.create_all)
+        yield
+        await conn.run_sync(repositories.schemes.Base.metadata.drop_all)
 
 
 @pytest.fixture()
