@@ -111,11 +111,11 @@ async def get(jwt_token: str, audience: str) -> Session:
             iss=str(data.get('iss')),
             jti=uuid.UUID(data.get('jti')),
             jwt_token=jwt_token,
-            exp=datetime.fromtimestamp(data.get('exp'), tz=ZoneInfo('UTC')),
-            aud=data.get('aud'),
-            iat=datetime.fromtimestamp(data.get('iat'), tz=ZoneInfo('UTC')),
+            exp=datetime.fromtimestamp(float(data.get('exp', 0)), tz=ZoneInfo('UTC')),
+            aud=str(data.get('aud')),
+            iat=datetime.fromtimestamp(float(data.get('iat', 0)), tz=ZoneInfo('UTC')),
             payload=payload,
-            data=session_obj.data if session_obj.data is None else {},
+            data=session_obj.data if session_obj else {},
         )
 
 
