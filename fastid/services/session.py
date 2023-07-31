@@ -38,7 +38,7 @@ class Session:
         return f'Session(iss:{self.iss}, jti:{self.jti}, iat:{self.iat}, exp:{self.exp}, aud:{self.aud})'
 
 
-@decorator_trace()
+@decorator_trace(name='services.session.create')
 async def create(
     audience: str,
     expire_time_second: int = 60 * 60 * 24,
@@ -86,6 +86,7 @@ async def create(
     return jwt_token
 
 
+@decorator_trace(name='services.session.get')
 async def get(jwt_token: str, audience: str) -> Session:
     try:
         data: dict = jwt.decode(
@@ -119,6 +120,7 @@ async def get(jwt_token: str, audience: str) -> Session:
         )
 
 
+@decorator_trace(name='services.session.remove')
 async def remove(jwt_token: str, audience: str) -> None:
     session_obj = await get(jwt_token=jwt_token, audience=audience)
     await repositories.session.remove(session_id=uuid.UUID(str(session_obj.jti)))
