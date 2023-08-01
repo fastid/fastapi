@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 from fastid.exceptions import RecaptchaVerifyFailException
 
 
-async def test_users_create(client: httpx.AsyncClient, db_migrations):
+async def test_users_create(client: httpx.AsyncClient, db_migrations, mock_aiosmtplib):
     response = await client.post(
         url='/api/v1/users/email/',
         json={
