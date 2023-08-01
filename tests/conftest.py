@@ -33,7 +33,7 @@ async def db_migrations() -> AsyncGenerator[None, None]:
 async def mock_aiosmtplib(mocker: MockerFixture):
     mocker.patch('aiosmtplib.SMTP.connect', return_value='220 connect smtp server')
     mocker.patch('aiosmtplib.SMTP.sendmail', return_value=(None, '2.0.0 Ok: queued'))
-    mocker.patch('aiosmtplib.SMTP.quit', return_value='221 2.0.0 Closing connecton')
+    mocker.patch('aiosmtplib.SMTP.quit', return_value='221 2.0.0 Closing connection')
 
 
 @pytest.fixture()
