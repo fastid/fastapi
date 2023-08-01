@@ -1,0 +1,169 @@
+x-dockerfile-inline: &dockerfile_inline
+    dockerfile_inline: |
+      FROM python:3.11-slim-bookworm
+      ENV PIP_ROOT_USER_ACTION=ignore
+      ENV PYTHONDONTWRITEBYTECODE=1
+      ENV PYTHONUNBUFFERED=1
+      ENV TZ=UTC
+
+      COPY fastid /opt/build/fastid
+      COPY *.md /opt/build/
+      COPY pyproject.toml /opt/build/
+      COPY poetry.lock /opt/build/
+      COPY alembic.ini /opt/build/
+      COPY migrations /opt/build/migrations
+      COPY tests /opt/build/tests
+
+      WORKDIR /opt/build/
+
+      RUN apt-get update && apt-get install -y iputils-ping telnet curl
+      RUN pip install poetry
+      RUN poetry config virtualenvs.create false --local
+      RUN poetry install --with dev
+
+      USER www-data
+
+      EXPOSE 8000/tcp
+
+      HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:8000/healthcheck/ || exit 1
+
+services:
+  fastid:
+    build:
+      context: .
+      <<: *dockerfile_inline
+    container_name: fastid
+    command: "uvicorn --reload --no-date-header --no-server-header --no-access-log --log-level=error --host=0.0.0.0 fastid.app:app"
+    ports:
+      - ${API_HOST:-8000}:8000
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=fastid-postgres
+    profiles:
+      - dev
+    networks:
+      - fastid
+    volumes:
+      - ./fastid:/opt/build/fastid/
+      - ./migrations:/opt/build/migrations/
+      - ./tests:/opt/build/tests/
+    depends_on:
+      - fastid-postgres
+      - fastid-redis
+      - fastid-smtp
+      - fastid-rabbitmq
+
+  fastid-postgres:
+    image: postgres
+    container_name: fastid-postgres
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER:-user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
+      - POSTGRES_DB=${DB_DATABASE:-database}
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -d ${DB_DATABASE:-postgres} -U ${DB_USER:-postgres}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fastid
+    ports:
+      - ${DB_PORT:-5432}:5432
+    profiles:
+      - dev
+      - srv
+
+  fastid-redis:
+    image: redis:latest
+    container_name: fastid-redis
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./.data/redis:/data
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    networks:
+      - fastid
+    healthcheck:
+      test: redis-cli ping | grep PONG
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - dev
+      - srv
+
+  fastid-smtp:
+    image: cd2team/mailhog:latest
+    container_name: fastid-smtp
+    restart: unless-stopped
+    networks:
+      - fastid
+    ports:
+      - ${SMTP_PORT:-1025}:1025
+      - ${SMTP_WEB:-8025}:8025
+    profiles:
+      - dev
+      - srv
+    healthcheck:
+      test: sh -c 'netstat -an | grep 1025 > /dev/null; if [ 0 != $? ]; then exit 1; fi;'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  fastid-rabbitmq:
+    image: rabbitmq:management
+    container_name: fastid-rabbitmq
+    restart: unless-stopped
+    volumes:
+      - ./.data/rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fastid
+    ports:
+      - ${RABBITMQ_ADMIN_PORT:-15672}:15672
+      - ${RABBITMQ_PORT:-5672}:5672
+    profiles:
+      - dev
+      - srv
+
+  fastid-migrations:
+    build:
+      context: .
+      <<: *dockerfile_inline
+    container_name: fastid-migrations
+    command: alembic upgrade head
+    volumes:
+      - ./fastid:/opt/build/fastid/
+      - ./migrations:/opt/build/migrations/
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=fastid-postgres
+      - DB_PORT=${DB_USER:-5432}
+      - DB_USER=${DB_USER:-user}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_DATABASE=${DB_DATABASE:-database}
+    networks:
+      - fastid
+    profiles:
+      - dev
+      - srv
+    depends_on:
+      fastid-postgres:
+        condition: service_healthy
+
+networks:
+  fastid:
+    name: fastid-network
+    driver: bridge

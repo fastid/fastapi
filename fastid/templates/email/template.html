@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta http-equiv="Content-Type"  content="text/html; charset=UTF-8" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                color: #000000;
+                font-size: 14px;
+                background-color: #f8f8f8;
+                background-repeat: repeat;
+            }
+
+            .tb_center {
+                margin-left: auto;
+                margin-right: auto;
+                width: 770px;
+            }
+
+            .mt15 {
+                margin-top: 15px;
+            }
+
+            .mt30 {
+                margin-top: 30px;
+            }
+
+            .mb0 {
+                margin-bottom: 0;
+            }
+
+            .fs20 {
+                font-size: 20px;
+            }
+
+            .fs15 {
+                font-size: 15px;
+            }
+
+            .fst_italic {
+                font-style: italic;
+            }
+
+            .td_global {
+                padding: 60px 70px;
+            }
+
+            .td_global2 {
+                padding: 0 30px 30px;
+            }
+
+            .table_global {
+                width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+                border-color: #e6e6e6;
+                border-width: 1px;
+                border-style: solid;
+                background-color: #fff;
+                padding: 25px 0 50px 30px;
+            }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <table class="tb_center">
+            <tr>
+                <td class="td_global">
+                    <table class="table_global">
+                        <tr>
+                            <td class="td_global2">
+                                <p class="mt15 mb0 fs20">
+                                    {% block title %}{% endblock %}
+                                </p>
+                                <p class="mt30 mb0">
+                                    {% block body %}{% endblock %}
+                                </p>
+                                <p class="mt30 mb0 fs15 fst_italic">
+                                    Regards, {{ app_name }}!
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
