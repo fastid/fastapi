@@ -41,6 +41,11 @@ class JWTAlgorithm(str, Enum):
         return [c.value for c in cls]
 
 
+class PasswordHasherMemoryProfile(str, Enum):
+    low: str = 'low'
+    high: str = 'high'
+
+
 class Settings(BaseSettings):
     app_name: str = 'FastID'
 
@@ -137,6 +142,7 @@ class Settings(BaseSettings):
 
     password_policy_max_length: int = 200
     password_policy_min_length: int = 5
+    password_hasher_memory_profile: PasswordHasherMemoryProfile = PasswordHasherMemoryProfile.high
 
     jwt_secret: SecretStr = SecretStr('jwt_secret')
     jwt_algorithm: JWTAlgorithm = JWTAlgorithm.HS256

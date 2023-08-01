@@ -4,13 +4,15 @@ from email.mime.text import MIMEText
 from aiosmtplib import SMTP
 from jinja2 import Environment as Jinja2Environment
 from jinja2 import FileSystemLoader
+from opentelemetry.trace import get_current_span
 
 from .. import typing
+from ..logger import logger
 from ..settings import Environment, settings
 from ..trace import decorator_trace
 
 
-@decorator_trace(name='services.user.create_by_email')
+@decorator_trace(name='services.sendmail.send')
 async def send(
     email: typing.Email,
     template: str,
@@ -18,6 +20,8 @@ async def send(
     params: dict,
     name: str | None = None,
 ) -> None:
+    span = get_current_span()
+
     env = Jinja2Environment(
         loader=FileSystemLoader(f'{settings.base_dir}/fastid/templates/email/'),
         enable_async=True,
@@ -53,4 +57,13 @@ async def send(
 
     (_, status) = await smtp.sendmail(sender=settings.default_email, recipients=email, message=msg.as_string())
 
+    span.set_attributes(
+        {
+            'status': status,
+            'template': template,
+            'use_tls': True if settings.environment == Environment.production else False,
+        },
+    )
+
+    logger.info(f'send mail status:{status}', extra={'status': status})
     await smtp.quit()

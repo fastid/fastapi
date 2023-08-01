@@ -1,1 +1,1 @@
-from . import recaptcha, sendmail, session, user
+from . import password_hasher, recaptcha, sendmail, session, user
