@@ -17,4 +17,6 @@ async def create_user_by_email(body: schemes.RequestCreateUserByEmail) -> scheme
     if settings.recaptcha_enable:
         await services.recaptcha.check_verify(recaptcha_verify=body.recaptcha_verify)
 
+    await services.user.create_by_email(email=body.email, password=body.password)
+
     return schemes.ResponseEmpty()

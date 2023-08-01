@@ -1,3 +1,4 @@
+import os
 import time
 import traceback
 from uuid import uuid4
@@ -92,7 +93,7 @@ class Middleware:
             try:
                 await self.app(scope, receive, send_wrapper)
             except Exception as exc:
-                if settings.environment == Environment.development:  # pragma: no cover
+                if settings.environment == Environment.development and not os.environ.get('PYTEST'):  # pragma: no cover
                     traceback.print_exc()
 
                 response = ORJSONResponse(

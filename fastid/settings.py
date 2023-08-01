@@ -142,6 +142,28 @@ class Settings(BaseSettings):
     jwt_algorithm: JWTAlgorithm = JWTAlgorithm.HS256
     jwt_iss: str = app_name
 
+    smtp_host: str = 'localhost'
+    """Smtp host address as one of the following: an IP address or a domain name"""
+
+    smtp_port: int = 25
+    """Smtp port number to connect to at the server host"""
+
+    smtp_username: str | None = None
+
+    smtp_password: SecretStr | None = None
+
+    default_email: str = 'support@example.com'
+    """ The default email address that will be used to send mail """
+
+    default_email_name: str = 'FastID'
+    """ Name for the default email address that will be used to send mail """
+
+    mime_domain: str = 'example.com'
+    """ Sets the domain for sending emails """
+
+    mime_idstring: str = 'fastid'
+    """ Sets the identifier for sending emails """
+
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',
         env_file_encoding='utf-8',

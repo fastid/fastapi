@@ -1,0 +1,14 @@
+{% extends "template.html" %}
+{% block title %}
+    {% if lang == "ru" %}Код подтверждения на jobs.su{% else %}Confirmation code on jobs.su{% endif %}
+{% endblock %}
+{% block body %}
+    <br>
+    <br>
+    <strong>{{ code }}</strong> - your code for authorization
+    <br>
+    <br>
+    <br>
+    If you received it by mistake, please ignore this email.
+    <br>
+{% endblock %}
