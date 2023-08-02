@@ -9,6 +9,8 @@ from pytest_httpx import HTTPXMock
 from fastid.http_base_client import http_base_client
 from fastid.logger import cxt_request_id
 
+URL_HTTP_TEST_SERVER = 'https://httpbin.dmuth.org'
+
 
 async def test_http_base_client(httpx_mock: HTTPXMock):
     httpx_mock.add_response(
@@ -23,12 +25,12 @@ async def test_http_base_client(httpx_mock: HTTPXMock):
                 'X-Amzn-Trace-Id': 'Root=1-63e13139-236293ce7f43fb367d5cb2a1',
             },
             'origin': '8.8.8.8',
-            'url': 'https://httpbin.org/get',
+            'url': f'{URL_HTTP_TEST_SERVER}/get',
         },
     )
 
     async with http_base_client() as client:
-        response: httpx.Response = await client.get(url='https://httpbin.org/get')
+        response: httpx.Response = await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
         assert response.json().get('headers').get('Accept')
         assert response.json().get('headers').get('Accept-Encoding')
         assert response.json().get('headers').get('Accept-Language')
@@ -38,25 +40,25 @@ async def test_http_base_client(httpx_mock: HTTPXMock):
 async def test_http_base_errors(app: FastAPI, client: httpx.AsyncClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=500)
     async with http_base_client() as client:
-        response: httpx.Response = await client.get(url='https://httpbin.org/status/500')
+        response: httpx.Response = await client.get(url=f'{URL_HTTP_TEST_SERVER}/status/500')
 
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
             assert exc.response.status_code == 500
-            assert exc.request.url == 'https://httpbin.org/status/500'
+            assert exc.request.url == f'{URL_HTTP_TEST_SERVER}/status/500'
 
 
 async def test_http_timeout(app: FastAPI, client: httpx.AsyncClient):
     async with http_base_client(timeout=0.01) as client:
         try:
-            await client.get(url='https://httpbin.org/get')
+            await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
         except ConnectTimeout:
             assert 1 == 1
 
     with pytest.raises(ConnectTimeout):
         async with http_base_client(timeout=0.01) as client:
-            await client.get(url='https://httpbin.org/get')
+            await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
 
 
 async def test_http_base_client_request_id(httpx_mock: HTTPXMock):
@@ -76,12 +78,12 @@ async def test_http_base_client_request_id(httpx_mock: HTTPXMock):
                 'X-Amzn-Trace-Id': 'Root=1-63e1345b-509ee9773d534eaa0290bfeb',
             },
             'origin': '8.8.8.8',
-            'url': 'https://httpbin.org/get',
+            'url': f'{URL_HTTP_TEST_SERVER}/get',
         },
     )
 
     cxt_request_id.set(request_id)
 
     async with http_base_client() as client:
-        response: httpx.Response = await client.get(url='https://httpbin.org/get')
+        response: httpx.Response = await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
         assert response.json().get('headers').get('Request-Id') == request_id

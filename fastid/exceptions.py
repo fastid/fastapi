@@ -46,6 +46,12 @@ class JWTSignatureExpiredException(MainException):
         self.error = message
 
 
+class InternalServerException(MainException):
+    def __init__(self, message: str = 'Internal server error'):
+        super().__init__(message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.error = message
+
+
 def exception(exc_type: ExceptionType):
     async def wrapper(
         request: Request,
@@ -79,4 +85,5 @@ exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Corouti
     RequestValidationError: exception(RequestValidationError),
     NotFoundException: exception(NotFoundException),
     RecaptchaVerifyFailException: exception(RecaptchaVerifyFailException),
+    InternalServerException: exception(InternalServerException),
 }
