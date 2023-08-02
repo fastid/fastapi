@@ -55,7 +55,14 @@ class InternalServerException(MainException):
 def exception(exc_type: ExceptionType):
     async def wrapper(
         request: Request,
-        err: (RequestValidationError | NotFoundException | RecaptchaVerifyFailException),
+        err: (
+            RequestValidationError
+            | NotFoundException
+            | RecaptchaVerifyFailException
+            | JWTSignatureExpiredException
+            | JWTAudienceException
+            | InternalServerException
+        ),
     ):
         if isinstance(err, RequestValidationError):
             errors: dict[str, str] = {}
@@ -85,5 +92,7 @@ exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Corouti
     RequestValidationError: exception(RequestValidationError),
     NotFoundException: exception(NotFoundException),
     RecaptchaVerifyFailException: exception(RecaptchaVerifyFailException),
+    JWTAudienceException: exception(JWTAudienceException),
+    JWTSignatureExpiredException: exception(JWTSignatureExpiredException),
     InternalServerException: exception(InternalServerException),
 }
