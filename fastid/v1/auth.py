@@ -14,6 +14,11 @@ class RequestCreateUserByEmail(BaseModel):
         recaptcha_verify: str = Field(..., title='Recaptcha Verify', description='Recaptcha Verify')
 
 
+class RequestConfirmationCode(BaseModel):
+    confirmation_token: str = Field(..., title='JWT Token', description='Confirmation token')
+    code: int = Field(..., title='Code', description='Code', examples=[1111])
+
+
 class ResponseConfirmationToken(BaseModel):
     confirmation_token: str = Field(..., title='JWT Token', description='Confirmation token')
 
@@ -31,3 +36,13 @@ async def create_user_by_email(body: RequestCreateUserByEmail) -> ResponseConfir
     return ResponseConfirmationToken(
         confirmation_token=await services.auth.sending_confirmation_code(email=body.email),
     )
+
+
+# @router.post(
+#     path='/confirmation/',
+#     summary='Confirmation code',
+#     name='confirmation_code',
+# )
+# async def confirmation_code(body: RequestConfirmationCode):
+#     body.confirmation_token
+#     pass
