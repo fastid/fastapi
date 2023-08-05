@@ -6,7 +6,7 @@ from fastid.exceptions import RecaptchaVerifyFailException
 
 async def test_users_create(client: httpx.AsyncClient, db_migrations, mock_aiosmtplib):
     response = await client.post(
-        url='/api/v1/users/email/',
+        url='/api/v1/auth/email/',
         json={
             'email': 'user@example.com',
             'password': 'password',
@@ -14,13 +14,14 @@ async def test_users_create(client: httpx.AsyncClient, db_migrations, mock_aiosm
         },
     )
     assert response.status_code == 201
+    assert response.json().get('confirmation_token')
 
 
 async def test_users_create_by_email_fail(client: httpx.AsyncClient, mocker: MockerFixture):
     mocker.patch('fastid.services.recaptcha.check_verify', side_effect=RecaptchaVerifyFailException())
 
     response = await client.post(
-        url='/api/v1/users/email/',
+        url='/api/v1/auth/email/',
         json={
             'email': 'user@example.com',
             'password': 'password',
@@ -33,7 +34,7 @@ async def test_users_create_by_email_fail(client: httpx.AsyncClient, mocker: Moc
 
 async def test_users_create_empty_email(client: httpx.AsyncClient):
     response = await client.post(
-        url='/api/v1/users/email/',
+        url='/api/v1/auth/email/',
         json={
             'password': 'password',
             'recaptcha_verify': 'recaptcha_verify',
@@ -44,7 +45,7 @@ async def test_users_create_empty_email(client: httpx.AsyncClient):
 
 async def test_users_create_empty_recaptcha(client: httpx.AsyncClient):
     response = await client.post(
-        url='/api/v1/users/email/',
+        url='/api/v1/auth/email/',
         json={
             'password': 'password',
         },
@@ -56,7 +57,7 @@ async def test_users_create_by_email_exception(client: httpx.AsyncClient, mocker
     mocker.patch('fastid.services.recaptcha.check_verify', side_effect=Exception())
 
     response = await client.post(
-        url='/api/v1/users/email/',
+        url='/api/v1/auth/email/',
         json={
             'email': 'user@example.com',
             'password': 'password',
