@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Uuid, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -64,3 +65,33 @@ class Sessions(Base):
         sort_order=70,
     )
     user: Mapped['Users'] = relationship('Users', foreign_keys=user_id, lazy='select')
+
+
+class Applications(Base):
+    __tablename__ = 'applications'
+
+    application_id: Mapped[int] = mapped_column(Integer, primary_key=True, sort_order=10)
+    name: Mapped[str] = mapped_column(String, sort_order=50)
+    client_id: Mapped[str] = mapped_column(String(40), unique=True, sort_order=60)
+    client_secret: Mapped[str] = mapped_column(String(40), sort_order=70)
+    redirect_uri: Mapped[List['RedirectURI']] = relationship('RedirectURI', lazy='subquery')
+
+
+class RedirectURI(Base):
+    __tablename__ = 'redirect_uri'
+
+    redirect_uri_id: Mapped[int] = mapped_column(Integer, primary_key=True, sort_order=10)
+    uri: Mapped[str] = mapped_column(String, sort_order=50)
+
+    application_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey('applications.application_id', onupdate='CASCADE', ondelete='CASCADE'),
+        nullable=True,
+        sort_order=60,
+    )
+
+    application: Mapped['Applications'] = relationship(
+        'Applications',
+        foreign_keys=application_id,
+        lazy='joined',
+    )

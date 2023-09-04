@@ -13,7 +13,7 @@ async def test_users_create(client: httpx.AsyncClient, db_migrations, mock_aiosm
             'recaptcha_verify': 'recaptcha_verify',
         },
     )
-    assert response.status_code == 201
+    assert response.status_code == httpx.codes.CREATED
     assert response.json().get('confirmation_token')
 
 
@@ -28,7 +28,7 @@ async def test_users_create_by_email_fail(client: httpx.AsyncClient, mocker: Moc
             'recaptcha_verify': 'recaptcha_verify',
         },
     )
-    assert response.status_code == 400
+    assert response.status_code == httpx.codes.BAD_REQUEST
     assert response.json() == {'error': 'Recaptcha verify fail'}
 
 
@@ -40,7 +40,7 @@ async def test_users_create_empty_email(client: httpx.AsyncClient):
             'recaptcha_verify': 'recaptcha_verify',
         },
     )
-    assert response.status_code == 422
+    assert response.status_code == httpx.codes.UNPROCESSABLE_ENTITY
 
 
 async def test_users_create_empty_recaptcha(client: httpx.AsyncClient):
@@ -50,7 +50,7 @@ async def test_users_create_empty_recaptcha(client: httpx.AsyncClient):
             'password': 'password',
         },
     )
-    assert response.status_code == 422
+    assert response.status_code == httpx.codes.UNPROCESSABLE_ENTITY
 
 
 async def test_users_create_by_email_exception(client: httpx.AsyncClient, mocker: MockerFixture):
@@ -64,5 +64,5 @@ async def test_users_create_by_email_exception(client: httpx.AsyncClient, mocker
             'recaptcha_verify': 'recaptcha_verify',
         },
     )
-    assert response.status_code == 500
+    assert response.status_code == httpx.codes.INTERNAL_SERVER_ERROR
     assert response.json() == {'error': 'Internal server error'}

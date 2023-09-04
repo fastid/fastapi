@@ -72,4 +72,5 @@ if settings.cors_enable:
 app.add_middleware(middlewares.Middleware)
 
 app.include_router(handlers.healthcheck.router)
+app.include_router(handlers.oauth.router)
 app.include_router(v1.auth.router, prefix='/api/v1')

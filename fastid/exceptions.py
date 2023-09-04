@@ -26,6 +26,22 @@ class NotFoundException(MainException):
         self.error = message
 
 
+class ConflictException(MainException):
+    """Conflict object"""
+
+    def __init__(self, message: str = 'Conflict object'):
+        super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST)
+        self.error = message
+
+
+class BadRequestException(MainException):
+    """Bad Request"""
+
+    def __init__(self, message: str = 'Bad Request'):
+        super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST)
+        self.error = message
+
+
 class RecaptchaVerifyFailException(MainException):
     """Recaptcha verify fail"""
 
@@ -58,6 +74,8 @@ def exception(exc_type: ExceptionType):
         err: (
             RequestValidationError
             | NotFoundException
+            | ConflictException
+            | BadRequestException
             | RecaptchaVerifyFailException
             | JWTSignatureExpiredException
             | JWTAudienceException
@@ -74,6 +92,8 @@ def exception(exc_type: ExceptionType):
 
                 if type_err == 'missing' and field == 'email':
                     errors[field] = 'Required email field'
+                elif type_err == 'enum' and field == 'grant_type':
+                    errors[field] = 'Required grant_type field'
                 else:
                     errors[field] = msg
 
@@ -91,6 +111,8 @@ def exception(exc_type: ExceptionType):
 exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Coroutine[Any, Any, Response]]] | None = {
     RequestValidationError: exception(RequestValidationError),
     NotFoundException: exception(NotFoundException),
+    ConflictException: exception(ConflictException),
+    BadRequestException: exception(BadRequestException),
     RecaptchaVerifyFailException: exception(RecaptchaVerifyFailException),
     JWTAudienceException: exception(JWTAudienceException),
     JWTSignatureExpiredException: exception(JWTSignatureExpiredException),
