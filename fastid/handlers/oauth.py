@@ -42,9 +42,14 @@ async def authorize(
             redirect_uri=redirect_uri,
             state=state,
         )
-
         return RedirectResponse(url=link)
-    return None
+
+    link = await services.oauth.creating_link_redirect_implicit_token(
+        client_id=client_id,
+        redirect_uri=redirect_uri,
+        state=state,
+    )
+    return RedirectResponse(url=link)
 
 
 @router.post(path='/token/')

@@ -25,3 +25,27 @@ async def creating_link_redirect_code(*, client_id: str, redirect_uri: str, stat
 
     redirect_uri = redirect_uri.rstrip('/')
     return f'{redirect_uri}/?{parse.urlencode(params)}'
+
+
+async def creating_link_redirect_implicit_token(*, client_id: str, redirect_uri: str, state: str | None = None) -> str:
+    redirect_uri = redirect_uri.lower().strip()
+    application = await repositories.applications.get_by_client_id(client_id=client_id)
+
+    flag_found_redirect_uri = False
+    for application_uri in application.redirect_uri:
+        if application_uri.uri == redirect_uri:
+            flag_found_redirect_uri = True
+
+    if not flag_found_redirect_uri:
+        raise BadRequestException
+
+    redirect_uri = redirect_uri.rstrip('/')
+    params = {
+        'access_token': 'access_token',
+        'token_type': 'Bearer',
+        'expires_in': 86400,
+    }
+    if state is not None:
+        params['state'] = state
+
+    return f'{redirect_uri}/#{parse.urlencode(params)}'
