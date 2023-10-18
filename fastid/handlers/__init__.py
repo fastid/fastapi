@@ -1,3 +1,3 @@
-from . import healthcheck, oauth
+from . import healthcheck
 
-__all__ = ['healthcheck', 'oauth']
+__all__ = ['healthcheck']

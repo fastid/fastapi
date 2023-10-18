@@ -1,7 +1,6 @@
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -94,26 +93,15 @@ class Settings(BaseSettings):
     indicate no overflow limit; no limit will be placed on the total number of concurrent connections. Defaults to 5.
     """
 
-    trusted_hosts: list[str] = ['*']
+    trusted_hosts: str = '*'
     """ Trusted hosts """
 
     cors_enable: bool = False
-    cors_allow_origins: list[str] = ['*']
+    cors_allow_origins: str = '*'
     cors_allow_credentials: bool = True
-    cors_allow_headers: list[str] = []
-    cors_allow_methods: list[
-        Literal[
-            'GET',
-            'POST',
-            'PUT',
-            'PATCH',
-            'DELETE',
-            'OPTIONS',
-            'CONNECT',
-            'HEAD',
-            'TRACE',
-        ]
-    ] = []
+    cors_allow_headers: str = '*'
+    cors_allow_methods: str = '*'
+    cors_expose_headers: str = 'Request-Id,Trace-Id,Etag'
 
     opentelemetry_service_name: str = app_name
 
@@ -147,6 +135,8 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr = SecretStr('jwt_secret')
     jwt_algorithm: JWTAlgorithm = JWTAlgorithm.HS256
     jwt_iss: str = app_name
+    jwt_access_token_lifetime: int = 60 * 60
+    jwt_refresh_token_lifetime: int = 60 * 60 * 24 * 30
 
     smtp_host: str = 'localhost'
     """Smtp host address as one of the following: an IP address or a domain name"""

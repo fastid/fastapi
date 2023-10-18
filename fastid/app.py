@@ -56,21 +56,23 @@ Instrumentator(excluded_handlers=['/healthcheck/', '/metrics']).instrument(
 # Middlewares
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=settings.trusted_hosts,
+    allowed_hosts=settings.trusted_hosts.split(','),
 )
 
 if settings.cors_enable:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_allow_origins,
+        allow_origins=settings.cors_allow_origins.split(','),
         allow_credentials=settings.cors_allow_credentials,
-        allow_methods=settings.cors_allow_methods,
-        allow_headers=settings.cors_allow_headers,
+        allow_methods=settings.cors_allow_methods.split(','),
+        allow_headers=settings.cors_allow_headers.split(','),
+        expose_headers=settings.cors_expose_headers.split(','),
     )
 
 # App middleware
 app.add_middleware(middlewares.Middleware)
 
 app.include_router(handlers.healthcheck.router)
-app.include_router(handlers.oauth.router)
-app.include_router(v1.auth.router, prefix='/api/v1')
+app.include_router(v1.config.router, prefix='/api/v1')
+app.include_router(v1.admin.router, prefix='/api/v1')
+app.include_router(v1.users.router, prefix='/api/v1')

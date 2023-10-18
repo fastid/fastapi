@@ -1,3 +1,3 @@
-from . import auth
+from . import admin, config, users
 
-__all__ = ['auth']
+__all__ = ['config', 'admin', 'users']
