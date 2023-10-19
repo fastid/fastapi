@@ -39,3 +39,5 @@ repos:
     rev: v1.6.0
     hooks:
     -   id: mypy
+        additional_dependencies:
+        - pydantic~=2.0
