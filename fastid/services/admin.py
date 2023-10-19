@@ -6,7 +6,10 @@ from . import models
 async def create_user(*, email: typing.Email, password: typing.Password) -> models.Token:
     config = await services.config.get()
     if config.is_setup:
-        raise BadRequestException
+        raise BadRequestException(
+            message='The initial configuration of the project has already been done',
+            i18n='initial_configuration_is_done',
+        )
 
     user_id = await repositories.users.create(email=email, password=password)
     token = await services.tokens.create(user_id=user_id, audience='internal')
