@@ -33,12 +33,10 @@ async def create(
         result = await session.execute(stmt)
         await session.commit()
 
-        token_id_result = result.scalar()
+        if token_result := result.scalar():
+            return typing.TokenID(token_result)
 
-        if token_id_result is None:
-            return None
-
-        return typing.TokenID(token_id_result)
+        return None
 
 
 @decorator_trace(name='repositories.tokens.get_by_id')

@@ -4,6 +4,7 @@ from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 import pytest
+from pytest_mock import MockerFixture
 
 from fastid import repositories, typing
 from fastid.exceptions import NotFoundException
@@ -23,6 +24,24 @@ async def test_create(db_migrations):
         expires_at=datetime.datetime.now(tz=ZoneInfo('UTC')) + timedelta(days=1),
     )
     assert token_id
+
+
+async def test_create_return_none(db_migrations, mocker: MockerFixture):
+    user_id = await repositories.users.create(
+        email=typing.Email('user@exmaple.com'),
+        password=typing.Password('Password'),
+    )
+
+    mocker.patch('sqlalchemy.Result.scalar', return_value=None)
+
+    token_id = await repositories.tokens.create(
+        token_id=typing.TokenID(uuid.uuid4()),
+        access_token='access_token',
+        refresh_token='refresh_token',
+        user_id=user_id,
+        expires_at=datetime.datetime.now(tz=ZoneInfo('UTC')) + timedelta(days=1),
+    )
+    assert not token_id
 
 
 async def test_get_by_id(db_migrations):
