@@ -132,7 +132,7 @@ def exception(exc_type: ExceptionType):
                 'error': {
                     'message': err.message,
                     'i18n': {
-                        'message': err.i18n,
+                        'message': err.i18n if err.i18n else 'unknown_error',
                         'params': err.params,
                     },
                 },
