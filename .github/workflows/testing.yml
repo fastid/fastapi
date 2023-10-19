@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  PYTHON_VERSION: 3.11.4 # See https://github.com/actions/python-versions/blob/main/versions-manifest.json
+  PYTHON_VERSION: 3.12.0 # See https://github.com/actions/python-versions/blob/main/versions-manifest.json
 
 
 jobs:
