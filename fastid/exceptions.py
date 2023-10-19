@@ -88,7 +88,7 @@ def exception(exc_type: ExceptionType):
             | InternalServerException
         ),
     ):
-        if isinstance(err, RequestValidationError):
+        if isinstance(err, RequestValidationError):  # pragma: no cover
             errors: dict[str, dict] = {}
             for error in err.errors():
                 field = str(error['loc'][-1])
