@@ -1,13 +1,10 @@
 from contextlib import asynccontextmanager
 
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.starlette import StarletteIntegration
 
 from . import __version__, handlers, middlewares, v1
 from .exceptions import exc_handlers
@@ -26,23 +23,6 @@ async def lifespan(app: FastAPI):
     """
     logger.info('Startup FastID service', extra={'environment': settings.environment.lower()})
     yield
-
-
-if settings.sentry_dsn:
-    sentry_sdk.init(
-        dsn=str(settings.sentry_dsn),
-        traces_sample_rate=0,
-        release=f'FastID {__version__}',
-        environment=settings.environment.value,
-        integrations=[
-            StarletteIntegration(
-                transaction_style='endpoint',
-            ),
-            FastApiIntegration(
-                transaction_style='endpoint',
-            ),
-        ],
-    )
 
 
 app = FastAPI(

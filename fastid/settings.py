@@ -2,7 +2,7 @@ import os
 from enum import Enum
 from pathlib import Path
 
-from pydantic import HttpUrl, SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -159,9 +159,6 @@ class Settings(BaseSettings):
 
     mime_idstring: str = 'fastid'
     """ Sets the identifier for sending emails """
-
-    sentry_dsn: HttpUrl | None = None
-    """ Adds integration with sentry """
 
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',

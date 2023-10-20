@@ -210,25 +210,6 @@ services:
       - "traefik.tcp.routers.rabbitmq.entrypoints=rabbitmq"
       - "traefik.tcp.services.rabbitmq.loadbalancer.server.port=5672"
 
-  fastid-mongo:
-    image: mongo:latest
-    container_name: fastid-mongo
-    restart: unless-stopped
-    volumes:
-      - ./.data/mongo:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-    networks:
-      - fastid
-    labels:
-      - "traefik.enable=True"
-
-      # TCP
-      - "traefik.tcp.routers.mongo.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.mongo.entrypoints=mongo"
-      - "traefik.tcp.services.mongo.loadbalancer.server.port=27017"
-
   fastid-migrations:
     build:
       context: .
