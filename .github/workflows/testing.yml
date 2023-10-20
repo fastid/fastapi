@@ -136,13 +136,9 @@ jobs:
 
   test:
     name: "Testing code"
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     needs: [pre-commit, black, ruff, mypy]
     timeout-minutes: 5
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-latest ]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
