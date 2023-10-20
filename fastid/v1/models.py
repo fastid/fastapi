@@ -3,6 +3,7 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field
 
 from .. import typing
+from ..settings import settings
 
 
 class CaptchaType(Enum):
@@ -26,7 +27,13 @@ class ResponseConfig(BaseModel):
 
 class RequestCreateAdminUser(BaseModel):
     email: typing.Email = Field(..., title='Email address', description='Email address')
-    password: typing.Password = Field(..., title='Password', description='Password')
+    password: typing.Password = Field(
+        ...,
+        title='Password',
+        description='Password',
+        min_length=settings.password_policy_min_length,
+        max_length=settings.password_policy_max_length,
+    )
 
 
 class ResponseCreateAdminUser(BaseModel):

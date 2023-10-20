@@ -93,9 +93,11 @@ def exception(exc_type: ExceptionType):
             for error in err.errors():
                 field = str(error['loc'][-1])
                 type_err = error['type']
-                inpt = error['input']
+                input_ = error['input']
                 ctx: dict | None = error.get('ctx')
                 msg = error['msg']
+
+                logger.debug('Error', extra={'field': field, 'type_err': type_err, 'input': input_, 'ctx': ctx})
 
                 if type_err == 'missing':
                     errors[field] = {
@@ -110,7 +112,15 @@ def exception(exc_type: ExceptionType):
                         'message': 'Incorrect email address',
                         'i18n': {
                             'message': 'incorrect_email_address',
-                            'params': {'email': inpt.get('email')},
+                            'params': {'email': input_},
+                        },
+                    }
+                elif type_err in ['string_too_short', 'string_too_long']:
+                    errors[field] = {
+                        'message': msg,
+                        'i18n': {
+                            'message': type_err,
+                            'params': ctx,
                         },
                     }
                 else:
@@ -121,9 +131,6 @@ def exception(exc_type: ExceptionType):
                             'params': {},
                         },
                     }
-
-                logger.debug('Error', extra={'field': field, 'type_err': type_err, 'input': inpt, 'ctx': ctx})
-
             return ORJSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={'errors': errors})
 
         return ORJSONResponse(
