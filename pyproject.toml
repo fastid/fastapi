@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "FastID"
 version = "0.0.1"
-description = "Authorization and authentication service"
+description = "Single Sign-On (SSO) Server"
 authors = ["Kostya Ten <kostya@yandex.ru>"]
 readme = "README.md"
 
