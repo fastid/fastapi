@@ -9,7 +9,7 @@ from pytest_httpx import HTTPXMock
 from fastid.http_base_client import http_base_client
 from fastid.logger import cxt_request_id
 
-URL_HTTP_TEST_SERVER = 'https://httpbin.dmuth.org'
+URL_HTTP_TEST_SERVER = 'https://render.httpbin.dmuth.org/'
 
 
 async def test_http_base_client(httpx_mock: HTTPXMock):
@@ -38,14 +38,14 @@ async def test_http_base_client(httpx_mock: HTTPXMock):
 
 
 async def test_http_base_errors(app: FastAPI, client: httpx.AsyncClient, httpx_mock: HTTPXMock):
-    httpx_mock.add_response(status_code=500)
+    httpx_mock.add_response(status_code=httpx.codes.INTERNAL_SERVER_ERROR)
     async with http_base_client() as client:
         response: httpx.Response = await client.get(url=f'{URL_HTTP_TEST_SERVER}/status/500')
 
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
-            assert exc.response.status_code == 500
+            assert exc.response.status_code == httpx.codes.INTERNAL_SERVER_ERROR
             assert exc.request.url == f'{URL_HTTP_TEST_SERVER}/status/500'
 
 

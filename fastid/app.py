@@ -1,3 +1,4 @@
+import re
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -5,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.exceptions import HTTPException
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.staticfiles import StaticFiles
 
 from . import __version__, handlers, middlewares, v1
 from .exceptions import exc_handlers
@@ -56,20 +60,46 @@ Instrumentator(excluded_handlers=['/healthcheck/', '/metrics']).instrument(
 # Middlewares
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=settings.trusted_hosts,
+    allowed_hosts=settings.trusted_hosts.split(','),
 )
 
 if settings.cors_enable:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_allow_origins,
+        allow_origins=settings.cors_allow_origins.split(','),
         allow_credentials=settings.cors_allow_credentials,
-        allow_methods=settings.cors_allow_methods,
-        allow_headers=settings.cors_allow_headers,
+        allow_methods=settings.cors_allow_methods.split(','),
+        allow_headers=settings.cors_allow_headers.split(','),
+        expose_headers=settings.cors_expose_headers.split(','),
     )
 
 # App middleware
 app.add_middleware(middlewares.Middleware)
 
+
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        if re.match(r'^api', path):
+            return await super().get_response(path, scope)
+
+        try:
+            return await super().get_response(path, scope)
+        except (HTTPException, StarletteHTTPException) as ex:
+            if ex.status_code == 404:
+                return await super().get_response('index.html', scope)
+
+
 app.include_router(handlers.healthcheck.router)
-app.include_router(v1.auth.router, prefix='/api/v1')
+app.include_router(v1.admin.router, prefix='/api/v1')
+app.include_router(v1.users.router, prefix='/api/v1')
+app.include_router(v1.config.router, prefix='/api/v1')
+
+
+app.mount(
+    path='/',
+    app=SPAStaticFiles(
+        directory=f'{settings.base_dir}/fastid/static',
+        html=True,
+    ),
+    name='spa-static-files',
+)

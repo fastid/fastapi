@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 import jwt
 from jwt import ExpiredSignatureError, InvalidAudienceError
 
-from .. import repositories
+from .. import repositories, typing
 from ..exceptions import JWTAudienceException, JWTSignatureExpiredException
 from ..settings import JWTAlgorithm, settings
 from ..trace import decorator_trace
@@ -55,7 +55,7 @@ async def create(
     :return:
     """
 
-    expire_at = datetime.now(tz=ZoneInfo('UTC')) + timedelta(seconds=expire_time_second)
+    expires_at = datetime.now(tz=ZoneInfo('UTC')) + timedelta(seconds=expire_time_second)
     session_id = uuid.uuid4()
     iat = datetime.now(tz=ZoneInfo('UTC'))
 
@@ -73,7 +73,7 @@ async def create(
             'iss': settings.jwt_iss,
             'jti': str(session_id),
             'iat': iat,
-            'exp': expire_at,
+            'exp': expires_at,
             'aud': audience,
         },
         key=settings.jwt_secret.get_secret_value(),
@@ -81,7 +81,7 @@ async def create(
     )
 
     # We write it to the database
-    await repositories.session.create(session_id=session_id, expire_at=expire_at, data=data)
+    await repositories.session.create(session_id=typing.SessionID(session_id), expires_at=expires_at, data=data)
 
     return jwt_token
 
@@ -123,4 +123,4 @@ async def get(jwt_token: str, audience: str) -> Session:
 @decorator_trace(name='services.session.remove')
 async def remove(jwt_token: str, audience: str) -> None:
     session_obj = await get(jwt_token=jwt_token, audience=audience)
-    await repositories.session.remove(session_id=uuid.UUID(str(session_obj.jti)))
+    await repositories.session.delete_by_id(session_id=uuid.UUID(str(session_obj.jti)))

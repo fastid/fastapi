@@ -1,6 +1,6 @@
 x-dockerfile-inline: &dockerfile_inline
     dockerfile_inline: |
-      FROM python:3.11-slim-bookworm
+      FROM python:3.12-slim-bookworm
       ENV PIP_ROOT_USER_ACTION=ignore
       ENV PYTHONDONTWRITEBYTECODE=1
       ENV PYTHONUNBUFFERED=1
@@ -28,20 +28,64 @@ x-dockerfile-inline: &dockerfile_inline
       HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:8000/healthcheck/ || exit 1
 
 services:
+
+  fastid-traefik:
+    restart: unless-stopped
+    image: traefik:2.10
+    container_name: fastid-traefik
+    env_file:
+      - .env
+    command: |
+      --api.insecure=true
+      --api.dashboard=true
+      --log.level=INFO
+      --entrypoints.http.address=:80
+      --entrypoints.https.address=:443
+      --entrypoints.smtp.address=:1025
+      --entrypoints.rabbitmq.address=:5672
+      --entrypoints.redis.address=:6379
+      --entrypoints.postgres.address=:5432
+      --entrypoints.mongo.address=:27017
+      --providers.docker
+      --providers.docker.endpoint=unix:///var/run/docker.sock
+      --providers.docker.exposedByDefault=false
+      --providers.docker.network=fastid
+      --providers.file.filename=/etc/traefik/traefik.tls.yml
+      --metrics.prometheus=true
+    ports:
+      - 80:80
+      - 443:443
+      - 1025:1025
+      - ${RABBITMQ_PORT:-5672}:5672
+      - ${REDIS_PORT:-6379}:6379
+      - ${DB_PORT:-5432}:5432
+      - ${MONGO_PORT:-27017}:27017
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.tls.yml:/etc/traefik/traefik.tls.yml:ro
+      - ./certs/:/certs/:ro
+    networks:
+      - fastid
+    labels:
+      - "traefik.enable=True"
+
+      # HTTP
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.services.traefik.loadbalancer.server.scheme=http"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.entrypoints=https"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost.direct`)"
+
   fastid:
     build:
       context: .
       <<: *dockerfile_inline
     container_name: fastid
     command: "uvicorn --reload --no-date-header --no-server-header --no-access-log --log-level=error --host=0.0.0.0 fastid.app:app"
-    ports:
-      - ${API_HOST:-8000}:8000
     env_file:
       - .env
     environment:
       - DB_HOST=fastid-postgres
-    profiles:
-      - dev
     networks:
       - fastid
     volumes:
@@ -53,6 +97,15 @@ services:
       - fastid-redis
       - fastid-smtp
       - fastid-rabbitmq
+    labels:
+      - "traefik.enable=True"
+
+      # HTTP
+      - "traefik.http.services.fastid.loadbalancer.server.scheme=http"
+      - "traefik.http.services.fastid.loadbalancer.server.port=8000"
+      - "traefik.http.routers.fastid.entrypoints=https,http"
+      - "traefik.http.routers.fastid.tls=true"
+      - "traefik.http.routers.fastid.rule=Host(`localhost.direct`)"
 
   fastid-postgres:
     image: postgres
@@ -66,17 +119,19 @@ services:
     volumes:
       - ./.data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: pg_isready -d ${DB_DATABASE:-postgres} -U ${DB_USER:-postgres}
+      test: pg_isready -d ${DB_DATABASE:-postgres} -U ${DB_USER:-user}
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - fastid
-    ports:
-      - ${DB_PORT:-5432}:5432
-    profiles:
-      - dev
-      - srv
+    labels:
+      - "traefik.enable=True"
+
+      # TCP
+      - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.postgres.entrypoints=postgres"
+      - "traefik.tcp.services.postgres.loadbalancer.server.port=5432"
 
   fastid-redis:
     image: redis:latest
@@ -86,8 +141,6 @@ services:
       - .env
     volumes:
       - ./.data/redis:/data
-    ports:
-      - ${REDIS_PORT:-6379}:6379
     networks:
       - fastid
     healthcheck:
@@ -95,9 +148,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles:
-      - dev
-      - srv
+    labels:
+      - "traefik.enable=True"
+
+      # TCP
+      - "traefik.tcp.routers.redis.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.redis.entrypoints=redis"
+      - "traefik.tcp.services.redis.loadbalancer.server.port=6379"
 
   fastid-smtp:
     image: cd2team/mailhog:latest
@@ -105,17 +162,25 @@ services:
     restart: unless-stopped
     networks:
       - fastid
-    ports:
-      - ${SMTP_PORT:-1025}:1025
-      - ${SMTP_WEB:-8025}:8025
-    profiles:
-      - dev
-      - srv
     healthcheck:
       test: sh -c 'netstat -an | grep 1025 > /dev/null; if [ 0 != $? ]; then exit 1; fi;'
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      - "traefik.enable=True"
+
+      # HTTP
+      - "traefik.http.routers.smtp.tls=true"
+      - "traefik.http.services.smtp.loadbalancer.server.scheme=http"
+      - "traefik.http.services.smtp.loadbalancer.server.port=8025"
+      - "traefik.http.routers.smtp.rule=Host(`smtp.localhost.direct`)"
+      - "traefik.http.routers.smtp.entrypoints=https"
+
+      # TCP
+      - "traefik.tcp.routers.smtp.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.smtp.entrypoints=smtp"
+      - "traefik.tcp.services.smtp.loadbalancer.server.port=1025"
 
   fastid-rabbitmq:
     image: rabbitmq:management
@@ -130,12 +195,20 @@ services:
       retries: 5
     networks:
       - fastid
-    ports:
-      - ${RABBITMQ_ADMIN_PORT:-15672}:15672
-      - ${RABBITMQ_PORT:-5672}:5672
-    profiles:
-      - dev
-      - srv
+    labels:
+      - "traefik.enable=True"
+
+      # HTTP
+      - "traefik.http.routers.rabbitmq.tls=true"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.scheme=http"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.localhost.direct`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=https"
+
+      # TCP
+      - "traefik.tcp.routers.rabbitmq.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.rabbitmq.entrypoints=rabbitmq"
+      - "traefik.tcp.services.rabbitmq.loadbalancer.server.port=5672"
 
   fastid-migrations:
     build:
@@ -156,9 +229,6 @@ services:
       - DB_DATABASE=${DB_DATABASE:-database}
     networks:
       - fastid
-    profiles:
-      - dev
-      - srv
     depends_on:
       fastid-postgres:
         condition: service_healthy

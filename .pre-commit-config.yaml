@@ -1,8 +1,15 @@
+default_language_version:
+    python: python3.12.0
+default_stages: [pre-commit, pre-push]
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+-   repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.15
     hooks:
-      - id: check-added-large-files
+      - id: validate-pyproject
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
       - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
@@ -24,13 +31,20 @@ repos:
       - id: double-quote-string-fixer
 
 -   repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.10.0
     hooks:
     - id: black
-      language_version: python3.11
+      language_version: python3.12
 
 -   repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.0.280'
+    rev: v0.1.0
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
+
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.6.0
+    hooks:
+    -   id: mypy
+        additional_dependencies:
+        - pydantic~=2.0

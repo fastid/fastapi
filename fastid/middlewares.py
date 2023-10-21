@@ -98,7 +98,15 @@ class Middleware:
 
                 response = ORJSONResponse(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    content={'error': 'Internal server error'},
+                    content={
+                        'error': {
+                            'message': 'Internal server error',
+                            'i18n': {
+                                'message': 'internal_server_error',
+                                'params': {},
+                            },
+                        },
+                    },
                 )
 
                 extra['exception.message'] = f'{exc}'
