@@ -1,3 +1,4 @@
+import re
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -78,18 +79,27 @@ app.add_middleware(middlewares.Middleware)
 
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
+        if re.match(r'^api', path):
+            return await super().get_response(path, scope)
+
         try:
             return await super().get_response(path, scope)
         except (HTTPException, StarletteHTTPException) as ex:
             if ex.status_code == 404:
                 return await super().get_response('index.html', scope)
-            raise ex
 
 
 app.include_router(handlers.healthcheck.router)
-app.include_router(v1.config.router, prefix='/api/v1')
 app.include_router(v1.admin.router, prefix='/api/v1')
 app.include_router(v1.users.router, prefix='/api/v1')
+app.include_router(v1.config.router, prefix='/api/v1')
 
 
-app.mount('/', SPAStaticFiles(directory=f'{settings.base_dir}/fastid/static', html=True), name='spa-static-files')
+app.mount(
+    path='/',
+    app=SPAStaticFiles(
+        directory=f'{settings.base_dir}/fastid/static',
+        html=True,
+    ),
+    name='spa-static-files',
+)

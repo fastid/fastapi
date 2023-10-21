@@ -18,7 +18,7 @@ def _get_engine() -> AsyncEngine:
             port=settings.db_port,
             database=settings.db_database,
         ),
-        echo=True,
+        echo=False,
         pool_size=settings.db_pool_size,
         max_overflow=settings.db_max_overflow,
         connect_args={
