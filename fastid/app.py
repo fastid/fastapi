@@ -5,6 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import ORJSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.exceptions import HTTPException
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.staticfiles import StaticFiles
 
 from . import __version__, handlers, middlewares, v1
 from .exceptions import exc_handlers
@@ -72,7 +75,21 @@ if settings.cors_enable:
 # App middleware
 app.add_middleware(middlewares.Middleware)
 
+
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except (HTTPException, StarletteHTTPException) as ex:
+            if ex.status_code == 404:
+                return await super().get_response('index.html', scope)
+            raise ex
+
+
 app.include_router(handlers.healthcheck.router)
 app.include_router(v1.config.router, prefix='/api/v1')
 app.include_router(v1.admin.router, prefix='/api/v1')
 app.include_router(v1.users.router, prefix='/api/v1')
+
+
+app.mount('/', SPAStaticFiles(directory=f'{settings.base_dir}/fastid/static', html=True), name='spa-static-files')
