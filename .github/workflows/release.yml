@@ -43,7 +43,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            fastid/${{ env.IMAGE_NAME }}
+            fastid/fastid
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           labels: |
             maintainer=Kostya Ten
