@@ -6,9 +6,11 @@ import jwt
 
 from .. import repositories, typing
 from ..settings import settings
+from ..trace import decorator_trace
 from . import models
 
 
+@decorator_trace(name='services.tokens.create')
 async def create(*, user_id: typing.UserID, audience: str | None = None) -> models.Token:
     current_datetime = datetime.now(tz=ZoneInfo('UTC'))
     token_id = uuid.uuid4()
@@ -51,6 +53,7 @@ async def create(*, user_id: typing.UserID, audience: str | None = None) -> mode
     )
 
 
+@decorator_trace(name='services.tokens.refresh')
 async def refresh(*, refresh_token: str, audience: str | None = None) -> models.Token:
     data = jwt.decode(
         jwt=refresh_token,
