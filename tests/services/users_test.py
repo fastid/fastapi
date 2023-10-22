@@ -20,3 +20,8 @@ async def test_get_by_email(db_migrations):
     assert user.email == typing.Email('user@exmaple.com')
     assert user.user_id == 1
     assert user.password
+
+
+async def test_get_by_email_not_found(db_migrations):
+    user = await services.users.get_by_email(email=typing.Email('user@exmaple.com'))
+    assert user is None

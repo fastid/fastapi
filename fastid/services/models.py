@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from .. import services, typing
+from .. import typing
 
 
 class CaptchaType(Enum):
@@ -35,6 +35,3 @@ class User:
     user_id: typing.UserID
     email: typing.Email
     password: typing.Password
-
-    async def verify_password(self, password: typing.Password) -> bool:
-        return await services.password_hasher.verify(password_hash=self.password, password=password)
