@@ -20,6 +20,8 @@ class Config:
     captcha_usage: list[CaptchaUsage]
     recaptcha_site_key: str | None
     jwt_iss: str
+    password_policy_max_length: int
+    password_policy_min_length: int
 
 
 @dataclass

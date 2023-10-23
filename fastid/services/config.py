@@ -12,6 +12,8 @@ async def get() -> models.Config:
         captcha_usage=[],
         recaptcha_site_key=None,
         jwt_iss=settings.jwt_iss,
+        password_policy_max_length=settings.password_policy_max_length,
+        password_policy_min_length=settings.password_policy_min_length,
     )
 
     captcha_usage = []
