@@ -21,7 +21,7 @@ async def test_http_base_client(httpx_mock: HTTPXMock):
                 'Accept-Encoding': 'gzip, deflate',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Host': 'httpbin.org',
-                'User-Agent': 'Iperon',
+                'User-Agent': 'FastID',
                 'X-Amzn-Trace-Id': 'Root=1-63e13139-236293ce7f43fb367d5cb2a1',
             },
             'origin': '8.8.8.8',
