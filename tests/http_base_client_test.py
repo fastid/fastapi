@@ -9,7 +9,7 @@ from pytest_httpx import HTTPXMock
 from fastid.http_base_client import http_base_client
 from fastid.logger import cxt_request_id
 
-URL_HTTP_TEST_SERVER = 'https://render.httpbin.dmuth.org/'
+URL_HTTP_TEST_SERVER = 'https://render.httpbin.dmuth.org'
 
 
 async def test_http_base_client(httpx_mock: HTTPXMock):
