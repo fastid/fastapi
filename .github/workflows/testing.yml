@@ -163,7 +163,7 @@ jobs:
       - name: "Installing dependencies"
         run: |
           poetry config virtualenvs.create false
-          poetry install --with dev
+          poetry install
 
       - name: "Testing code"
         run: |
