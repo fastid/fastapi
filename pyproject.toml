@@ -71,7 +71,10 @@ env = [
 ]
 filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources.*",
-    "ignore::DeprecationWarning:google.rpc.*"
+    "ignore::DeprecationWarning:google.rpc.*",
+    "ignore:.*custom tp_new.*in Python 3.14.*:DeprecationWarning",
+    "ignore:datetime.datetime.utcfromtimestamp.*:DeprecationWarning",
+    "ignore:datetime.datetime.utcnow.*:DeprecationWarning",
 ]
 
 [tool.black]
