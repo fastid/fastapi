@@ -124,6 +124,9 @@ class Settings(BaseSettings):
     http_client_max_connections: int = 10
     """ Maximum number of allowable connections """
 
+    http_client_retries: int = 3
+    """ Maximum retries """
+
     recaptcha_enable: bool = False
     recaptcha_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
     recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
