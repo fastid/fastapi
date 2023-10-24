@@ -1,7 +1,9 @@
 import uuid
 
 import httpx
+import pytest
 from fastapi.applications import FastAPI
+from httpx import ConnectTimeout
 from pytest_httpx import HTTPXMock
 
 from fastid.http_base_client import http_base_client
@@ -47,16 +49,16 @@ async def test_http_base_errors(app: FastAPI, client: httpx.AsyncClient, httpx_m
             assert exc.request.url == f'{URL_HTTP_TEST_SERVER}/status/500'
 
 
-# async def test_http_timeout(app: FastAPI, client: httpx.AsyncClient):
-#     async with http_base_client(timeout=0.01) as client:
-#         try:
-#             await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
-#         except ConnectTimeout:
-#             assert 1 == 1
-#
-#     with pytest.raises(ConnectTimeout):
-#         async with http_base_client(timeout=0.01) as client:
-#             await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
+async def test_http_timeout(app: FastAPI, client: httpx.AsyncClient):
+    async with http_base_client(timeout=0.01, retries=0) as client:
+        try:
+            await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
+        except ConnectTimeout:
+            assert 1 == 1
+
+    with pytest.raises(ConnectTimeout):
+        async with http_base_client(timeout=0.01, retries=0) as client:
+            await client.get(url=f'{URL_HTTP_TEST_SERVER}/get')
 
 
 async def test_http_base_client_request_id(httpx_mock: HTTPXMock):
