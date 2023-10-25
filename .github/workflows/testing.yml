@@ -157,22 +157,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
+      - name: Set current date as env variable
+        run: echo "NOW=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+
       - name: "Installing poetry"
         run: pip install poetry
 
       - name: "Installing dependencies"
-        run: poetry install
+        run: |
+          poetry config virtualenvs.create false
+          poetry install --with dev
 
       - name: "Testing code"
         run: |
           poetry run coverage run -m pytest
-          poetry run coverage html --show-contexts --title="FastID"
+          poetry run coverage html --title="FastID"
           poetry run coverage xml
 
       - name: "Upload report"
         uses: actions/upload-artifact@v3
         with:
-          name: coverage.zip
+          name: coverage-fastid-${{ env.NOW }}.zip
           path: |
             htmlcov/
           retention-days: 90

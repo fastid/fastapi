@@ -11,8 +11,8 @@
   "already_have_account": "У вас уже есть учетная запись?",
   "dont_have_account": "У вас нет учетной записи?",
   "please_enter_valid_email": "Пожалуйста, введите адрес электронной почты",
-  "email_required": "Адрес электронной почты не заполнено",
-  "password_required": "Пароль не заполнено",
+  "email_required": "Адрес электронной почты не заполнен",
+  "password_required": "Пароль не заполнен",
   "unable_get_project_settings": "Невозможно получить настройки проекта",
   "next": "Далее",
   "logout": "Выход",
@@ -24,12 +24,15 @@
   "change_light_theme": "Изменить на светлую тему",
   "close": "Звкрыть",
   "menu": "Меню",
-  "create_an_administrator_account": "Создать администратора",
+  "create_an_administrator": "Создать администратора",
   "go_to_project_github": "Перейти в репозиторий проекта",
   "password_dont_match_confirmation_password": "Пароль и подтверждение пароля не совпадают",
   "dashboard": "Панель управления",
   "unknown_error": "Неизвестная ошибка",
   "incorrect_email_address": "Неверный адрес электронной почты",
   "field_not_filled": "Поле {{field}} не заполнено",
-  "initial_configuration_is_done": "Начальная конфигурация проекта уже выполнена"
+  "initial_configuration_is_done": "Начальная конфигурация проекта уже выполнена",
+  "string_too_short": "Строка должна содержать не менее {{min_length}} символов",
+  "string_too_long": "Строка должна содержать не более {{max_length}} символов",
+  "back_to_dashboard": "Назад в панель управления"
 }

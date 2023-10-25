@@ -23,6 +23,8 @@ class ResponseConfig(BaseModel):
     recaptcha_site_key: str | None = None
     captcha_usage: list[CaptchaUsage] = []
     jwt_iss: str
+    password_policy_max_length: int
+    password_policy_min_length: int
 
 
 class RequestCreateAdminUser(BaseModel):

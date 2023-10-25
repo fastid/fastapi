@@ -31,5 +31,8 @@
   "unknown_error": "Unknown error",
   "incorrect_email_address": "Incorrect email address",
   "field_not_filled": "The field {{field}} is not filled",
-  "initial_configuration_is_done": "The initial configuration of the project has already been done"
+  "initial_configuration_is_done": "The initial configuration of the project has already been done",
+  "string_too_short": "String should have at least {{min_length}} characters",
+  "string_too_long": "String should have at most {{max_length}} characters",
+  "back_to_dashboard": "Back to Dashboard"
 }

@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from .. import typing
+
 
 class CaptchaType(Enum):
     captcha = 'recaptcha'
@@ -18,6 +20,8 @@ class Config:
     captcha_usage: list[CaptchaUsage]
     recaptcha_site_key: str | None
     jwt_iss: str
+    password_policy_max_length: int
+    password_policy_min_length: int
 
 
 @dataclass
@@ -26,3 +30,10 @@ class Token:
     refresh_token: str
     token_type: str = 'Bearer'
     expires_in: int = 3600
+
+
+@dataclass
+class User:
+    user_id: typing.UserID
+    email: typing.Email
+    password: typing.Password

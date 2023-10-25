@@ -1,8 +1,10 @@
 from .. import repositories
 from ..settings import settings
+from ..trace import decorator_trace
 from . import models
 
 
+@decorator_trace(name='services.config.get')
 async def get() -> models.Config:
     config_repo = await repositories.config.get()
 
@@ -12,6 +14,8 @@ async def get() -> models.Config:
         captcha_usage=[],
         recaptcha_site_key=None,
         jwt_iss=settings.jwt_iss,
+        password_policy_max_length=settings.password_policy_max_length,
+        password_policy_min_length=settings.password_policy_min_length,
     )
 
     captcha_usage = []
@@ -31,5 +35,6 @@ async def get() -> models.Config:
     return config
 
 
+@decorator_trace(name='services.config.update')
 async def update(key: str, value: str | list[str]) -> models.Config | None:
     return await repositories.config.update(key=key, value=value)

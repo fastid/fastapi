@@ -1,8 +1,10 @@
 from .. import repositories, services, typing
 from ..exceptions import BadRequestException
+from ..trace import decorator_trace
 from . import models
 
 
+@decorator_trace(name='services.admin.create_user')
 async def create_user(*, email: typing.Email, password: typing.Password) -> models.Token:
     config = await services.config.get()
     if config.is_setup:
