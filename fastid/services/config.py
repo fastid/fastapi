@@ -14,8 +14,8 @@ async def get() -> models.Config:
         captcha_usage=[],
         recaptcha_site_key=None,
         jwt_iss=settings.jwt_iss,
-        password_policy_max_length=settings.password_policy_max_length,
         password_policy_min_length=settings.password_policy_min_length,
+        password_policy_max_length=settings.password_policy_max_length,
     )
 
     captcha_usage = []
@@ -28,6 +28,10 @@ async def get() -> models.Config:
             config.recaptcha_site_key = obj.value
         elif obj.key == 'captcha_usage':
             captcha_usage.append(obj.value)
+        elif obj.key == 'password_policy_min_length':
+            config.password_policy_min_length = obj.value
+        elif obj.key == 'password_policy_max_length':
+            config.password_policy_max_length = obj.value
 
     if captcha_usage:
         config.captcha_usage = captcha_usage
