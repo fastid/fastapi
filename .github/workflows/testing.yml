@@ -158,10 +158,7 @@ jobs:
             ${{ runner.os }}-poetry-
 
       - name: Set current date as env variable
-        run: echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
-
-      - name: Echo current date
-        run: echo ${NOW}.zip
+        run: echo "NOW=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
 
       - name: "Installing poetry"
         run: pip install poetry
@@ -180,7 +177,7 @@ jobs:
       - name: "Upload report"
         uses: actions/upload-artifact@v3
         with:
-          name: coverage.zip
+          name: coverage-fastid-${NOW}.zip
           path: |
             htmlcov/
           retention-days: 90
