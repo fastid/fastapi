@@ -16,7 +16,7 @@ async def http_base_client(
     base_url: str = '',
     verify: bool = True,
     accept: str = 'application/json',
-    retries: int = settings.http_client_retries,
+    retries: int | None = None,
     app: FastAPI | None = None,
     timeout: float | None = None,
     headers: dict[str, str] | None = None,
@@ -33,7 +33,7 @@ async def http_base_client(
 
     client = httpx.AsyncClient(
         transport=httpx.AsyncHTTPTransport(
-            retries=retries,
+            retries=retries or settings.http_client_retries,
             limits=httpx.Limits(
                 max_keepalive_connections=settings.http_client_max_keepalive_connections,
                 max_connections=settings.http_client_max_connections,
