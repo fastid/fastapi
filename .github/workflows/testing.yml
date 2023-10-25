@@ -168,7 +168,7 @@ jobs:
       - name: "Testing code"
         run: |
           poetry run coverage run -m pytest
-          poetry run coverage html --show-contexts --title="FastID"
+          poetry run coverage html --title="FastID"
           poetry run coverage xml
 
       - name: "Upload report"
