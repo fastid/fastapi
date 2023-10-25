@@ -177,7 +177,7 @@ jobs:
       - name: "Upload report"
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-fastid-${{NOW}}.zip
+          name: coverage-fastid-${{ env.NOW }}.zip
           path: |
             htmlcov/
           retention-days: 90
