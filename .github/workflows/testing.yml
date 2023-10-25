@@ -157,6 +157,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
+      - name: Set current date as env variable
+        run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Echo current date
+        run: echo $NOW
+
       - name: "Installing poetry"
         run: pip install poetry
 
