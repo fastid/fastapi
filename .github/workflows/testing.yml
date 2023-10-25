@@ -158,10 +158,10 @@ jobs:
             ${{ runner.os }}-poetry-
 
       - name: Set current date as env variable
-        run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+        run: echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Echo current date
-        run: echo $NOW
+        run: echo ${NOW}.zip
 
       - name: "Installing poetry"
         run: pip install poetry
