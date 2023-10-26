@@ -71,8 +71,6 @@ env = [
     "PYTEST = True",
     "recaptcha_enable = True",
     "cors_enable = True",
-    "redis_username=test_user",
-    "redis_password=test_password",
 ]
 filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources.*",
