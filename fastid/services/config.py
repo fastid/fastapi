@@ -12,7 +12,7 @@ async def get() -> models.Config:
         is_setup=False,
         captcha=None,
         captcha_usage=[],
-        recaptcha_site_key=None,
+        recaptcha_site_key=settings.recaptcha_site_key,
         jwt_iss=settings.jwt_iss,
         password_policy_min_length=settings.password_policy_min_length,
         password_policy_max_length=settings.password_policy_max_length,

@@ -128,7 +128,7 @@ class Settings(BaseSettings):
     """ Maximum retries """
 
     recaptcha_enable: bool = False
-    recaptcha_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
     recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
     password_policy_max_length: int = 200
@@ -162,6 +162,12 @@ class Settings(BaseSettings):
 
     mime_idstring: str = 'fastid'
     """ Sets the identifier for sending emails """
+
+    redis_host: str = 'localhost'
+    redis_port: int = 6379
+    redis_db: int = 0
+    redis_username: str | None = None
+    redis_password: SecretStr | None = None
 
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',

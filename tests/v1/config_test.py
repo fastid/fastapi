@@ -9,6 +9,6 @@ async def test_get(client: httpx.AsyncClient, db_migrations):
 
     assert not response.json().get('is_setup')
     assert response.json().get('captcha') is None
-    assert response.json().get('recaptcha_site_key') is None
+    assert response.json().get('recaptcha_site_key')
     assert response.json().get('captcha_usage') == []
     assert response.json().get('jwt_iss') == settings.jwt_iss

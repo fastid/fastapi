@@ -3,6 +3,7 @@ from typing import AsyncGenerator
 import httpx
 import pytest
 from asgi_lifespan import LifespanManager
+from fakeredis import aioredis
 from fastapi import FastAPI
 from pytest_mock import MockerFixture
 
@@ -34,6 +35,13 @@ async def mock_aiosmtplib(mocker: MockerFixture):
     mocker.patch('aiosmtplib.SMTP.connect', return_value='220 connect smtp server')
     mocker.patch('aiosmtplib.SMTP.sendmail', return_value=(None, '2.0.0 Ok: queued'))
     mocker.patch('aiosmtplib.SMTP.quit', return_value='221 2.0.0 Closing connection')
+
+
+@pytest.fixture
+async def mock_redis_client(mocker: MockerFixture):
+    fake_redis = aioredis.FakeRedis(decode_responses=True)
+
+    mocker.patch('redis.asyncio.Redis', return_value=fake_redis)
 
 
 @pytest.fixture()

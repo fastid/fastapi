@@ -21,6 +21,6 @@ async def check_verify(*, recaptcha_verify: str) -> bool:
         response = await client.post(url='recaptcha/api/siteverify', params=params)
 
         if not response.json().get('success'):
-            raise RecaptchaVerifyFailException
+            raise RecaptchaVerifyFailException(i18n='recaptcha_verify_fail')
 
         return True

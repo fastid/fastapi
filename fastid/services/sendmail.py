@@ -55,7 +55,7 @@ async def send(
 
     await smtp.connect()
 
-    (_, status) = await smtp.sendmail(sender=settings.default_email, recipients=email, message=msg.as_string())
+    (_, status) = await smtp.sendmail(settings.default_email, email, msg.as_string())
 
     span.set_attributes(
         {
