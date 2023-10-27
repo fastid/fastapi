@@ -1,5 +1,5 @@
 default_language_version:
-    python: python3.12.0
+    python: python3.11
 default_stages: [pre-commit, pre-push]
 repos:
 -   repo: https://github.com/abravalheri/validate-pyproject
@@ -34,7 +34,7 @@ repos:
     rev: 23.10.0
     hooks:
     - id: black
-      language_version: python3.12
+      language_version: python3.11
 
 -   repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.1.0

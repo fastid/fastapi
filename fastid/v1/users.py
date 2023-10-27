@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from .. import services
 from . import models
@@ -20,3 +20,15 @@ async def updates_refresh_token(body: models.RequestUsersRefreshToken) -> models
         token_type=token.token_type,
         expires_in=token.expires_in,
     )
+
+
+@router.post(
+    path='/signin/',
+    summary='SignIn user',
+    name='user_signin',
+    status_code=status.HTTP_201_CREATED,
+)
+async def signin_user(body: models.RequestUserSignin):
+    await services.recaptcha.check_verify(recaptcha_verify=body.captcha)
+    print(body)
+    return {}
