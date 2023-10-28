@@ -10,7 +10,7 @@ async def test_get(db_migrations):
     await services.config.update(key='password_policy_max_length', value='200')
 
     config = await services.config.get()
-    assert config.is_setup == True
+    assert config.is_setup
     assert config.captcha == 'recaptcha'
     assert config.captcha_usage == ['signin']
     assert config.recaptcha_site_key == '12345'

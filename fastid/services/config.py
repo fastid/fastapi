@@ -36,9 +36,6 @@ async def get() -> models.Config:
     if captcha_usage:
         config.captcha_usage = captcha_usage
 
-    # async with redis_client() as client:
-    #     client.set('captcha', '')
-
     return config
 
 

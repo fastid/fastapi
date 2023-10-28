@@ -45,7 +45,6 @@ services:
       --entrypoints.rabbitmq.address=:5672
       --entrypoints.redis.address=:6379
       --entrypoints.postgres.address=:5432
-      --entrypoints.mongo.address=:27017
       --providers.docker
       --providers.docker.endpoint=unix:///var/run/docker.sock
       --providers.docker.exposedByDefault=false
@@ -59,7 +58,6 @@ services:
       - ${RABBITMQ_PORT:-5672}:5672
       - ${REDIS_PORT:-6379}:6379
       - ${DB_PORT:-5432}:5432
-      - ${MONGO_PORT:-27017}:27017
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.tls.yml:/etc/traefik/traefik.tls.yml:ro

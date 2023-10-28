@@ -10,7 +10,6 @@ on:
 
 env:
   PYTHON_VERSION: 3.11.6 # See https://github.com/actions/python-versions/blob/main/versions-manifest.json
-  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
 jobs:
   pre-commit:
