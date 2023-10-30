@@ -28,14 +28,6 @@ class Base(DeclarativeBase):
     )
 
 
-class Config(Base):
-    __tablename__ = 'config'
-
-    config_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, sort_order=10)
-    key: Mapped[str] = mapped_column(String(200), sort_order=50)
-    value: Mapped[str] = mapped_column(String(200), sort_order=60)
-
-
 class Users(Base):
     __tablename__ = 'users'
 

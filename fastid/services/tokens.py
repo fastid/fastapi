@@ -3,8 +3,10 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import jwt
+from jwt import PyJWTError
 
 from .. import repositories, typing
+from ..exceptions import NotFoundException
 from ..settings import settings
 from ..trace import decorator_trace
 from . import models
@@ -53,18 +55,24 @@ async def create(*, user_id: typing.UserID, audience: str | None = None) -> mode
     )
 
 
-@decorator_trace(name='services.tokens.refresh')
-async def refresh(*, refresh_token: str, audience: str | None = None) -> models.Token:
-    data = jwt.decode(
-        jwt=refresh_token,
-        key=settings.jwt_secret.get_secret_value(),
-        algorithms=[settings.jwt_algorithm.value],
-        audience=audience,
-        issuer=settings.jwt_iss,
-        verify=True,
-    )
+@decorator_trace(name='services.tokens.update')
+async def update(*, refresh_token: str, audience: str | None = None) -> models.Token:
+    try:
+        data = jwt.decode(
+            jwt=refresh_token,
+            key=settings.jwt_secret.get_secret_value(),
+            algorithms=[settings.jwt_algorithm.value],
+            audience=audience,
+            issuer=settings.jwt_iss,
+            verify=True,
+        )
+    except PyJWTError as err:
+        raise NotFoundException(
+            message='Token not found',
+            i18n='token_not_found',
+            params={'error': str(err)},
+        ) from err
 
     token = await repositories.tokens.get_by_id(token_id=typing.TokenID(uuid.UUID(data.get('jti'))))
-    user_id = token.user_id
     await repositories.tokens.delete_by_id(token_id=typing.TokenID(token.token_id))
-    return await create(user_id=user_id, audience=audience)
+    return await create(user_id=token.user_id, audience=audience)

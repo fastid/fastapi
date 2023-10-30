@@ -45,6 +45,10 @@ class PasswordHasherMemoryProfile(str, Enum):
     high: str = 'high'
 
 
+class Captcha(str, Enum):
+    recaptcha: str = 'recaptcha'
+
+
 class Settings(BaseSettings):
     app_name: str = 'FastID'
 
@@ -127,10 +131,6 @@ class Settings(BaseSettings):
     http_client_retries: int = 3
     """ Maximum retries """
 
-    recaptcha_enable: bool = False
-    recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-    recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
-
     password_policy_max_length: int = 200
     password_policy_min_length: int = 5
     password_hasher_memory_profile: PasswordHasherMemoryProfile = PasswordHasherMemoryProfile.high
@@ -163,11 +163,10 @@ class Settings(BaseSettings):
     mime_idstring: str = 'fastid'
     """ Sets the identifier for sending emails """
 
-    redis_host: str = 'localhost'
-    redis_port: int = 6379
-    redis_db: int = 0
-    redis_username: str | None = None
-    redis_password: SecretStr | None = None
+    captcha: Captcha | None = None
+    captcha_usage: str | None = None
+    recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',

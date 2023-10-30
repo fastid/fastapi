@@ -90,7 +90,6 @@ class SPAStaticFiles(StaticFiles):
 
 
 app.include_router(handlers.healthcheck.router)
-app.include_router(v1.admin.router, prefix='/api/v1')
 app.include_router(v1.users.router, prefix='/api/v1')
 app.include_router(v1.config.router, prefix='/api/v1')
 

@@ -2,26 +2,22 @@ from dataclasses import dataclass
 from enum import Enum
 
 from .. import typing
+from ..settings import Captcha
 
 
-class CaptchaType(Enum):
-    captcha = 'recaptcha'
-
-
-class CaptchaUsage(Enum):
-    signin = 'signin'
-    signup = 'signup'
+class CaptchaUsage(str, Enum):
+    signin: str = 'signin'
+    signup: str = 'signup'
 
 
 @dataclass
 class Config:
-    is_setup: bool
-    captcha: CaptchaType | None
-    captcha_usage: list[CaptchaUsage]
+    captcha_usage: list[str]
     recaptcha_site_key: str | None
     jwt_iss: str
     password_policy_max_length: int
     password_policy_min_length: int
+    captcha: Captcha | None = None
 
 
 @dataclass

@@ -1,4 +1,4 @@
-from .. import repositories, typing
+from .. import exceptions, repositories, services, typing
 from ..trace import decorator_trace
 from . import models
 
@@ -15,3 +15,12 @@ async def get_by_email(*, email: typing.Email) -> models.User | None:
         return None
 
     return models.User(user_id=user.user_id, email=user.email, password=user.password)
+
+
+@decorator_trace(name='services.users.token')
+async def token(*, email: typing.Email) -> models.Token | None:
+    user = await get_by_email(email=email)
+    if not user:
+        raise exceptions.NotFoundException(i18n='user_not_found', params={'email': email}, message='User not found')
+
+    return await services.tokens.create(user_id=user.user_id, audience='internal')

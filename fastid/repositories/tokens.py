@@ -45,7 +45,7 @@ async def get_by_id(*, token_id: typing.TokenID) -> schemes.Tokens | None:
         stmt = select(schemes.Tokens).where(schemes.Tokens.token_id == token_id)
         data = await session.scalar(stmt)
         if data is None:
-            raise NotFoundException(message='Token not found')
+            raise NotFoundException(message='Token not found', i18n='token_not_found')
 
         await session.commit()
         return data
