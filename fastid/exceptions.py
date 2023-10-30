@@ -41,6 +41,7 @@ class BadRequestException(MainException):
 
     def __init__(self, message: str = 'Bad Request', i18n: str | None = None, params: dict | None = None):
         super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST, i18n=i18n, params=params)
+        self.error = message
 
 
 class RecaptchaVerifyFailException(MainException):
@@ -48,6 +49,7 @@ class RecaptchaVerifyFailException(MainException):
 
     def __init__(self, message: str = 'Recaptcha verify fail', i18n: str | None = None, params: dict | None = None):
         super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST, i18n=i18n, params=params)
+        self.error = message
 
 
 class JWTAudienceException(MainException):

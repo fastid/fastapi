@@ -1,7 +1,7 @@
 import pytest
 from fastapi import FastAPI
 
-from fastid.exceptions import ConflictException, NotFoundException
+from fastid.exceptions import BadRequestException, ConflictException, NotFoundException
 
 
 async def test_exception_not_found(app: FastAPI):
@@ -12,3 +12,8 @@ async def test_exception_not_found(app: FastAPI):
 async def test_exception_conflict(app: FastAPI):
     with pytest.raises(ConflictException):
         raise ConflictException
+
+
+async def test_exception_bad_request(app: FastAPI):
+    with pytest.raises(BadRequestException):
+        raise BadRequestException

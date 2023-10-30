@@ -30,7 +30,7 @@ async def updates_refresh_token(body: models.RequestUsersRefreshToken) -> models
     status_code=status.HTTP_201_CREATED,
 )
 async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSignin:
-    token = await services.users.token(email=body.email)
+    token = await services.users.signin(email=body.email)
 
     return models.ResponseUserSignin(
         access_token=token.access_token,

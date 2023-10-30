@@ -32,3 +32,11 @@ async def test_signin(client: httpx.AsyncClient, db_migrations):
     assert response.json().get('refresh_token')
     assert response.json().get('expires_in')
     assert response.json().get('token_type')
+
+
+async def test_signin_not_found_user(client: httpx.AsyncClient, db_migrations):
+    response = await client.post(
+        url='/api/v1/users/signin/',
+        json={'email': 'user@exmaple.com', 'password': 'qazwsx12345'},
+    )
+    assert response.status_code == httpx.codes.NOT_FOUND
