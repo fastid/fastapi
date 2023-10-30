@@ -1,5 +1,5 @@
 from .. import repositories, services, typing
-from ..exceptions import NotFoundException
+from ..exceptions import BadRequestException
 from ..trace import decorator_trace
 from . import models
 
@@ -19,9 +19,14 @@ async def get_by_email(*, email: typing.Email) -> models.User | None:
 
 
 @decorator_trace(name='services.users.signin')
-async def signin(*, email: typing.Email) -> models.Token | None:
+async def signin(*, email: typing.Email, password: typing.Password) -> models.Token | None:
     user = await get_by_email(email=email)
     if not user:
-        raise NotFoundException(i18n='user_not_found', params={'email': email}, message='User not found')
+        raise BadRequestException(
+            i18n='email_or_password_incorrect',
+            params={'email': email},
+            message='Email or password is incorrect',
+        )
 
+    await services.password_hasher.verify(password_hash=user.password, password=password)
     return await services.tokens.create(user_id=user.user_id, audience='internal')

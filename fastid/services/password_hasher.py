@@ -1,10 +1,10 @@
 from argon2 import PasswordHasher
-from argon2.exceptions import InvalidHash
+from argon2.exceptions import InvalidHash, VerifyMismatchError
 from argon2.profiles import RFC_9106_HIGH_MEMORY, RFC_9106_LOW_MEMORY
 from opentelemetry.trace import get_current_span
 
 from .. import typing
-from ..exceptions import InternalServerException
+from ..exceptions import BadRequestException, InternalServerException
 from ..settings import PasswordHasherMemoryProfile, settings
 from ..trace import decorator_trace
 
@@ -47,5 +47,7 @@ async def verify(*, password_hash: str, password: typing.Password) -> bool:
         ph.verify(password_hash, password)
     except InvalidHash as err:
         raise InternalServerException from err
+    except VerifyMismatchError as err:
+        raise BadRequestException(i18n='password_incorrect', message='Password is incorrect') from err
 
     return True

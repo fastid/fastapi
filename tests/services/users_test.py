@@ -1,7 +1,7 @@
 import pytest
 
 from fastid import services, typing
-from fastid.exceptions import NotFoundException
+from fastid.exceptions import BadRequestException
 
 
 async def test_create(db_migrations):
@@ -35,12 +35,20 @@ async def test_signin(db_migrations):
         email=typing.Email('user@exmaple.com'),
         password=typing.Password('password'),
     )
-    token = await services.users.signin(email=typing.Email('user@exmaple.com'))
+    token = await services.users.signin(email=typing.Email('user@exmaple.com'), password=typing.Password('password'))
     assert token.refresh_token
     assert token.access_token
     assert token.token_type
 
 
 async def test_exception(db_migrations):
-    with pytest.raises(NotFoundException):
-        await services.users.signin(email=typing.Email('user@exmaple.com'))
+    with pytest.raises(BadRequestException):
+        await services.users.signin(email=typing.Email('user@exmaple.com'), password=typing.Password('password'))
+
+    await services.users.create(
+        email=typing.Email('user@exmaple.com'),
+        password=typing.Password('password'),
+    )
+
+    with pytest.raises(BadRequestException):
+        await services.users.signin(email=typing.Email('user@exmaple.com'), password=typing.Password('password_fail'))

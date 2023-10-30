@@ -39,4 +39,4 @@ async def test_signin_not_found_user(client: httpx.AsyncClient, db_migrations):
         url='/api/v1/users/signin/',
         json={'email': 'user@exmaple.com', 'password': 'qazwsx12345'},
     )
-    assert response.status_code == httpx.codes.NOT_FOUND
+    assert response.status_code == httpx.codes.BAD_REQUEST
