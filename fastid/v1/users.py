@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 
-from .. import services
+from .. import services, typing
 from ..depends import auth_user_depends
 from ..settings import settings
 from . import models
@@ -51,8 +51,5 @@ async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSign
     name='user_info',
 )
 async def info(user_id: auth_user_depends) -> models.ResponseUserInfo:
-    user = await services.users.get_by_id(user_id=user_id)
-    return models.ResponseUserInfo(
-        user_id=user_id,
-        email=user.email,
-    )
+    user = await services.users.get_by_id(user_id=typing.UserID(user_id))
+    return models.ResponseUserInfo(user_id=typing.UserID(user_id), email=typing.Email(user.email))
