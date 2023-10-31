@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status
 
 from .. import services
+from ..settings import settings
 from . import models
 
 router = APIRouter(tags=['Users'], prefix='/users')
@@ -30,6 +31,9 @@ async def updates_refresh_token(body: models.RequestUsersRefreshToken) -> models
     status_code=status.HTTP_201_CREATED,
 )
 async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSignin:
+    if settings.captcha and settings.captcha == 'recaptcha':
+        await services.recaptcha.check_verify(recaptcha_verify=body.captcha)
+
     token = await services.users.signin(email=body.email, password=body.password)
 
     return models.ResponseUserSignin(

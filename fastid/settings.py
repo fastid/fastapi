@@ -138,7 +138,7 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr = SecretStr('jwt_secret')
     jwt_algorithm: JWTAlgorithm = JWTAlgorithm.HS256
     jwt_iss: str = app_name
-    jwt_access_token_lifetime: int = 60 * 60
+    jwt_access_token_lifetime: int = 60 * 5
     jwt_refresh_token_lifetime: int = 60 * 60 * 24 * 30
 
     smtp_host: str = 'localhost'

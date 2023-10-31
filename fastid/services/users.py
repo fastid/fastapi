@@ -28,5 +28,9 @@ async def signin(*, email: typing.Email, password: typing.Password) -> models.To
             message='Email or password is incorrect',
         )
 
-    await services.password_hasher.verify(password_hash=user.password, password=password)
+    try:
+        await services.password_hasher.verify(password_hash=user.password, password=password)
+    except BadRequestException as err:
+        raise BadRequestException(i18n='email_or_password_incorrect', message='Email or password is incorrect') from err
+
     return await services.tokens.create(user_id=user.user_id, audience='internal')

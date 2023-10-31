@@ -3,7 +3,6 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field
 
 from .. import typing
-from ..settings import settings
 
 
 class CaptchaType(Enum):
@@ -43,8 +42,6 @@ class RequestUserSignin(BaseModel):
         ...,
         title='Password',
         description='Password',
-        max_length=settings.password_policy_max_length,
-        min_length=settings.password_policy_min_length,
     )
     captcha: str | None = Field(
         None,
