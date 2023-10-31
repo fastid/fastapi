@@ -50,5 +50,9 @@ async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSign
     summary='Info user',
     name='user_info',
 )
-async def info(user_id: auth_user_depends) -> dict:
-    return {'user_id': user_id}
+async def info(user_id: auth_user_depends) -> models.ResponseUserInfo:
+    user = await services.users.get_by_id(user_id=user_id)
+    return models.ResponseUserInfo(
+        user_id=user_id,
+        email=user.email,
+    )

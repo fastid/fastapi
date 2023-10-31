@@ -55,3 +55,8 @@ class ResponseUserSignin(ResponseUsersRefreshToken):
     refresh_token: str
     expires_in: int
     token_type: str = 'Bearer'
+
+
+class ResponseUserInfo(BaseModel):
+    email: typing.Email
+    user_id: typing.UserID

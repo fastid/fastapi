@@ -46,3 +46,4 @@ async def test_info(client_auth: httpx.AsyncClient):
     response = await client_auth.get(url='/api/v1/users/info/')
     assert response.status_code == httpx.codes.OK
     assert response.json().get('user_id')
+    assert response.json().get('email') == typing.Email('user@exmaple.com')
