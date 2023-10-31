@@ -24,6 +24,8 @@ class Config:
 class Token:
     access_token: str
     refresh_token: str
+    user_id: typing.UserID
+    token_id: typing.TokenID
     token_type: str = 'Bearer'
     expires_in: int = 3600
 

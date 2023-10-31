@@ -11,7 +11,7 @@ async def test_signin(client: httpx.AsyncClient, db_migrations):
 
     response = await client.post(
         url='/api/v1/users/signin/',
-        json={'email': 'user@exmaple.com', 'password': 'qazwsx12345'},
+        json={'email': 'user@exmaple.com', 'password': 'qazwsx12345', 'captcha': '1'},
     )
 
     assert response.status_code == httpx.codes.CREATED
@@ -40,3 +40,9 @@ async def test_signin_not_found_user(client: httpx.AsyncClient, db_migrations):
         json={'email': 'user@exmaple.com', 'password': 'qazwsx12345'},
     )
     assert response.status_code == httpx.codes.BAD_REQUEST
+
+
+async def test_info(client_auth: httpx.AsyncClient):
+    response = await client_auth.get(url='/api/v1/users/info/')
+    assert response.status_code == httpx.codes.OK
+    assert response.json().get('user_id')

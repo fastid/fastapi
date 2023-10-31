@@ -52,14 +52,23 @@ async def create(*, user_id: typing.UserID, audience: str | None = None) -> mode
         access_token=access_token,
         refresh_token=refresh_token,
         expires_in=settings.jwt_access_token_lifetime,
+        user_id=user_id,
+        token_id=typing.TokenID(token_id),
     )
 
 
 @decorator_trace(name='services.tokens.update')
 async def update(*, refresh_token: str, audience: str | None = None) -> models.Token:
+    token = await get(jwt_token=refresh_token, audience=audience)
+    await repositories.tokens.delete_by_id(token_id=token.token_id)
+    return await create(user_id=token.user_id, audience=audience)
+
+
+@decorator_trace(name='services.tokens.get')
+async def get(*, jwt_token: str, audience: str | None = None) -> models.Token:
     try:
         data = jwt.decode(
-            jwt=refresh_token,
+            jwt=jwt_token,
             key=settings.jwt_secret.get_secret_value(),
             algorithms=[settings.jwt_algorithm.value],
             audience=audience,
@@ -72,7 +81,12 @@ async def update(*, refresh_token: str, audience: str | None = None) -> models.T
             i18n='token_not_found',
             params={'error': str(err)},
         ) from err
-
     token = await repositories.tokens.get_by_id(token_id=typing.TokenID(uuid.UUID(data.get('jti'))))
-    await repositories.tokens.delete_by_id(token_id=typing.TokenID(token.token_id))
-    return await create(user_id=token.user_id, audience=audience)
+
+    return models.Token(
+        access_token=token.access_token,
+        refresh_token=token.refresh_token,
+        expires_in=settings.jwt_access_token_lifetime,
+        user_id=token.user_id,
+        token_id=token.token_id,
+    )

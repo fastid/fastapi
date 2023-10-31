@@ -70,7 +70,10 @@ testpaths = [
 ]
 env = [
     "PYTEST = True",
-    "recaptcha_enable = True",
+    "captcha = recaptcha",
+    "captcha_usage = signin",
+    "recaptcha_site_key = 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
+    "recaptcha_secret_key = 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
     "cors_enable = True",
 ]
 filterwarnings = [

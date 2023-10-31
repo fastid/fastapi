@@ -24,8 +24,13 @@ async def get_by_email(*, email: typing.Email) -> schemes.Users | None:
         stmt = select(schemes.Users).where(schemes.Users.email == email)
         result = await session.scalar(stmt)
         await session.commit()
+        return result
 
-        if not result:
-            return None
 
+@decorator_trace(name='repositories.users.get_by_id')
+async def get_by_id(*, user_id: typing.UserID) -> schemes.Users | None:
+    async with repositories.db.async_session() as session:
+        stmt = select(schemes.Users).where(schemes.Users.user_id == user_id)
+        result = await session.scalar(stmt)
+        await session.commit()
         return result

@@ -34,3 +34,13 @@ async def test_update(db_migrations):
 async def test_update_exception(db_migrations):
     with pytest.raises(NotFoundException):
         await services.tokens.update(refresh_token='fake_token', audience='test_audience')
+
+
+async def test_get(db_migrations):
+    user_id = await repositories.users.create(
+        email=typing.Email('user@example.com'),
+        password=typing.Password('password'),
+    )
+    token = await services.tokens.create(audience='test_audience', user_id=user_id)
+    token_result = await services.tokens.get(jwt_token=token.access_token, audience='test_audience')
+    assert token_result.token_id

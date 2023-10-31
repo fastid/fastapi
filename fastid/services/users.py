@@ -18,6 +18,15 @@ async def get_by_email(*, email: typing.Email) -> models.User | None:
     return models.User(user_id=user.user_id, email=user.email, password=user.password)
 
 
+@decorator_trace(name='services.users.get_by_id')
+async def get_by_id(*, user_id: typing.UserID) -> models.User | None:
+    user = await repositories.users.get_by_id(user_id=user_id)
+    if user is None:
+        return None
+
+    return models.User(user_id=user.user_id, email=user.email, password=user.password)
+
+
 @decorator_trace(name='services.users.signin')
 async def signin(*, email: typing.Email, password: typing.Password) -> models.Token | None:
     user = await get_by_email(email=email)

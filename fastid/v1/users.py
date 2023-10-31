@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status
 
 from .. import services
+from ..depends import auth_user_depends
 from ..settings import settings
 from . import models
 
@@ -31,7 +32,7 @@ async def updates_refresh_token(body: models.RequestUsersRefreshToken) -> models
     status_code=status.HTTP_201_CREATED,
 )
 async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSignin:
-    if settings.captcha and settings.captcha == 'recaptcha':
+    if settings.captcha and settings.captcha == 'recaptcha' and 'signin' in settings.captcha_usage.split(','):
         await services.recaptcha.check_verify(recaptcha_verify=body.captcha)
 
     token = await services.users.signin(email=body.email, password=body.password)
@@ -42,3 +43,12 @@ async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSign
         expires_in=token.expires_in,
         token_type=token.token_type,
     )
+
+
+@router.get(
+    path='/info/',
+    summary='Info user',
+    name='user_info',
+)
+async def info(user_id: auth_user_depends) -> dict:
+    return {'user_id': user_id}
