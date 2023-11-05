@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from .. import services
 from .models import ResponseConfig
 
-router = APIRouter(tags=['Config'], prefix='/config')
+router = APIRouter(prefix='/config')
 
 
 @router.get(

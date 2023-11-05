@@ -18,6 +18,9 @@ class Config:
     password_policy_max_length: int
     password_policy_min_length: int
     captcha: Captcha | None = None
+    link_github: bool = True
+    logo_url: str | None = None
+    logo_title: str | None = None
 
 
 @dataclass

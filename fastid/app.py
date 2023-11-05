@@ -10,7 +10,7 @@ from starlette.exceptions import HTTPException
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.staticfiles import StaticFiles
 
-from . import __version__, handlers, middlewares, v1
+from . import __version__, handlers, internal, middlewares
 from .exceptions import exc_handlers
 from .logger import logger
 from .settings import Environment, settings
@@ -90,8 +90,10 @@ class SPAStaticFiles(StaticFiles):
 
 
 app.include_router(handlers.healthcheck.router)
-app.include_router(v1.users.router, prefix='/api/v1')
-app.include_router(v1.config.router, prefix='/api/v1')
+
+# Internal API
+app.include_router(internal.config.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
+app.include_router(internal.users.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
 
 
 app.mount(

@@ -90,3 +90,8 @@ async def get(*, jwt_token: str, audience: str | None = None) -> models.Token:
         user_id=token.user_id,
         token_id=token.token_id,
     )
+
+
+@decorator_trace(name='services.tokens.delete')
+async def delete_by_id(*, token_id: typing.TokenID) -> None:
+    await repositories.tokens.delete_by_id(token_id=token_id)

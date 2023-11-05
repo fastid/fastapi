@@ -168,6 +168,11 @@ class Settings(BaseSettings):
     recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
     recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
+    link_github: bool = True
+
+    logo_url: str | None = None
+    logo_title: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',
         env_file_encoding='utf-8',

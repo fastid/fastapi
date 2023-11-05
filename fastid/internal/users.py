@@ -1,11 +1,11 @@
 from fastapi import APIRouter, status
 
 from .. import services, typing
-from ..depends import auth_user_depends
+from ..depends import auth_user_depends, token_id_depends
 from ..settings import settings
 from . import models
 
-router = APIRouter(tags=['Users'], prefix='/users')
+router = APIRouter()
 
 
 @router.post(
@@ -53,3 +53,13 @@ async def signin_user(body: models.RequestUserSignin) -> models.ResponseUserSign
 async def info(user_id: auth_user_depends) -> models.ResponseUserInfo:
     user = await services.users.get_by_id(user_id=typing.UserID(user_id))
     return models.ResponseUserInfo(user_id=typing.UserID(user_id), email=typing.Email(user.email))
+
+
+@router.post(
+    path='/logout/',
+    summary='Logout',
+    name='user_logout',
+)
+async def logout(token_id: token_id_depends, body: models.RequestEmply) -> models.ResponseEmply:
+    await services.tokens.delete_by_id(token_id=token_id)
+    return models.ResponseEmply()

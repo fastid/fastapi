@@ -14,6 +14,14 @@ class CaptchaUsage(Enum):
     signup = 'signup'
 
 
+class ResponseEmply(BaseModel):
+    pass
+
+
+class RequestEmply(BaseModel):
+    pass
+
+
 class ResponseConfig(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -23,6 +31,9 @@ class ResponseConfig(BaseModel):
     jwt_iss: str
     password_policy_max_length: int
     password_policy_min_length: int
+    link_github: bool = True
+    logo_url: str | None = None
+    logo_title: str | None = None
 
 
 class RequestUsersRefreshToken(BaseModel):

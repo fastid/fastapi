@@ -12,7 +12,7 @@ access_token_security = Security(HTTPBearer(description='Waiting for the transfe
 
 async def __auth_user(
     header: HTTPAuthorizationCredentials = access_token_security,
-) -> AsyncGenerator[services.models.Token | None, None]:
+) -> AsyncGenerator[typing.UserID | None, None]:
     try:
         token = await services.tokens.get(jwt_token=header.credentials, audience='internal')
     except MainException as err:
@@ -23,4 +23,16 @@ async def __auth_user(
     cxt_user_id.reset(cxt_user_id_token)
 
 
+async def __token_id(
+    header: HTTPAuthorizationCredentials = access_token_security,
+) -> AsyncGenerator[typing.TokenID | None, None]:
+    try:
+        token = await services.tokens.get(jwt_token=header.credentials, audience='internal')
+    except MainException as err:
+        raise UnauthorizedException(message='Invalid token', i18n='invalid_token') from err
+
+    yield token.token_id
+
+
 auth_user_depends = Annotated[typing.UserID, Depends(__auth_user)]
+token_id_depends = Annotated[typing.UserID, Depends(__token_id)]
