@@ -208,6 +208,27 @@ services:
       - "traefik.tcp.routers.rabbitmq.entrypoints=rabbitmq"
       - "traefik.tcp.services.rabbitmq.loadbalancer.server.port=5672"
 
+#  fastid-airflow:
+#    image: apache/airflow:latest
+#    container_name: fastid-airflow
+#    restart: unless-stopped
+#    networks:
+#      - fastid
+##    healthcheck:
+##      test: sh -c 'netstat -an | grep 1025 > /dev/null; if [ 0 != $? ]; then exit 1; fi;'
+##      interval: 10s
+##      timeout: 5s
+##      retries: 5
+#    labels:
+#      - "traefik.enable=True"
+#
+#      # HTTP
+#      - "traefik.http.routers.smtp.tls=true"
+#      - "traefik.http.services.smtp.loadbalancer.server.scheme=http"
+#      - "traefik.http.services.smtp.loadbalancer.server.port=8080"
+#      - "traefik.http.routers.smtp.rule=Host(`airflow.localhost.direct`)"
+#      - "traefik.http.routers.smtp.entrypoints=https"
+
   fastid-migrations:
     build:
       context: .

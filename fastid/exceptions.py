@@ -36,6 +36,14 @@ class ConflictException(MainException):
         self.error = message
 
 
+class UnauthorizedException(MainException):
+    """Unauthorized object"""
+
+    def __init__(self, message: str = 'Unauthorized object', i18n: str | None = None, params: dict | None = None):
+        super().__init__(message=message, status_code=status.HTTP_401_UNAUTHORIZED, i18n=i18n, params=params)
+        self.error = message
+
+
 class BadRequestException(MainException):
     """Bad Request"""
 
@@ -86,6 +94,7 @@ def exception(exc_type: ExceptionType):
             | RecaptchaVerifyFailException
             | JWTSignatureExpiredException
             | JWTAudienceException
+            | UnauthorizedException
             | InternalServerException
         ),
     ):
@@ -158,5 +167,6 @@ exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Corouti
     RecaptchaVerifyFailException: exception(RecaptchaVerifyFailException),
     JWTAudienceException: exception(JWTAudienceException),
     JWTSignatureExpiredException: exception(JWTSignatureExpiredException),
+    UnauthorizedException: exception(UnauthorizedException),
     InternalServerException: exception(InternalServerException),
 }
