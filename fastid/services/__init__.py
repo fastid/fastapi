@@ -1,3 +1,3 @@
-from . import config, models, password_hasher, recaptcha, sendmail, session, tokens, users
+from . import config, language, models, recaptcha, sendmail, session, tokens, users
 
-__all__ = ['password_hasher', 'recaptcha', 'sendmail', 'session', 'config', 'models', 'tokens', 'users']
+__all__ = ['recaptcha', 'sendmail', 'session', 'config', 'models', 'tokens', 'users', 'language']

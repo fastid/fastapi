@@ -11,26 +11,26 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = {extras = ["all"], version = "^0.104.0"}
-httpx = {extras = ["http2"], version = "^0.25.0"}
-uvicorn = "^0.23.2"
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.104.1"}
+httpx = {extras = ["http2"], version = "^0.25.1"}
+uvicorn = "^0.24.0.post1"
 asgi-lifespan = "^2.1.0"
 python-json-logger = "^2.0.7"
-opentelemetry-exporter-otlp-proto-grpc = "^1.20.0"
-sqlalchemy = {extras = ["asyncio", "aiosqlite"], version = "^2.0.22"}
-asyncpg = "^0.28.0"
+opentelemetry-exporter-otlp-proto-grpc = "^1.21.0"
+sqlalchemy = {extras = ["asyncio", "aiosqlite"], version = "^2.0.23"}
+asyncpg = "^0.29.0"
 prometheus-fastapi-instrumentator = "^6.1.0"
-phonenumbers = "^8.13.23"
+phonenumbers = "^8.13.24"
 alembic = "^1.12.0"
 argon2-cffi = "^23.1.0"
 pyjwt = "^2.8.0"
-aiosmtplib = "^3.0.0"
+aiosmtplib = "^3.0.1"
 jinja2 = "^3.1.2"
 python-multipart = "^0.0.6"
 greenlet = "^3.0.1"
 asyncclick = "^8.1.3.4"
-
+async-lru = "^2.0.4"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.0"
@@ -43,9 +43,10 @@ sqlalchemy = {extras = ["mypy"], version = "^2.0.21"}
 setuptools = "^68.2.2"
 black = "^23.9.1"
 isort = "^5.12.0"
-ruff = "^0.0.292"
+ruff = "^0.1.5"
 pytest-mock = "^3.11.1"
 pre-commit = "^3.5.0"
+
 
 [build-system]
 requires = ["poetry-core"]
@@ -86,12 +87,12 @@ filterwarnings = [
 
 [tool.black]
 line-length = 120
-target-version = ["py311"]
+target-version = ["py312"]
 skip-string-normalization = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 exclude = [
     "venv",
     ".nox",

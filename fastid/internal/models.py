@@ -1,8 +1,12 @@
+from datetime import date, datetime
 from enum import Enum
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .. import typing
+from .. import services, typing
+
+DataT = TypeVar('DataT')
 
 
 class CaptchaType(Enum):
@@ -14,26 +18,50 @@ class CaptchaUsage(Enum):
     signup = 'signup'
 
 
-class ResponseEmply(BaseModel):
+class Response:
+    class Config(services.models.Config):
+        pass
+
+    class Empty(BaseModel):
+        pass
+
+
+class Request:
+    class Empty(BaseModel):
+        pass
+
+
+class ResponseEmpty(BaseModel):
     pass
 
 
-class RequestEmply(BaseModel):
+class RequestEmpty(BaseModel):
     pass
 
 
-class ResponseConfig(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class ResponseList(BaseModel, Generic[DataT]):
+    results: list[DataT]
 
-    captcha: CaptchaType | None = None
-    recaptcha_site_key: str | None = None
-    captcha_usage: list[CaptchaUsage] = []
-    jwt_iss: str
-    password_policy_max_length: int
-    password_policy_min_length: int
-    link_github: bool = True
-    logo_url: str | None = None
-    logo_title: str | None = None
+    class Config:
+        title = 'Response List'
+
+
+class ResponseConfig(services.models.Config):
+    pass
+
+
+# class ResponseConfig(BaseModel):
+#     model_config = ConfigDict(from_attributes=True)
+#
+#     captcha: CaptchaType | None = None
+#     recaptcha_site_key: str | None = None
+#     captcha_usage: list[CaptchaUsage] = []
+#     jwt_iss: str
+#     password_policy_max_length: int
+#     password_policy_min_length: int
+#     link_github: bool = True
+#     logo_url: str | None = None
+#     logo_title: str | None = None
 
 
 class RequestUsersRefreshToken(BaseModel):
@@ -41,6 +69,8 @@ class RequestUsersRefreshToken(BaseModel):
 
 
 class ResponseUsersRefreshToken(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     access_token: str
     refresh_token: str
     expires_in: int
@@ -62,12 +92,43 @@ class RequestUserSignin(BaseModel):
 
 
 class ResponseUserSignin(ResponseUsersRefreshToken):
+    model_config = ConfigDict(from_attributes=True)
+
     access_token: str
     refresh_token: str
     expires_in: int
     token_type: str = 'Bearer'
 
 
+class ResponseUserInfoProfile(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    language: typing.Language
+    timezone: str
+    locate: str = 'en-us'
+    first_name: str | None = None
+    last_name: str | None = None
+    date_birth: date | None = None
+    gender: typing.Gender | None = None
+
+
 class ResponseUserInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    created_at: datetime
+    updated_at: datetime
     email: typing.Email
     user_id: typing.UserID
+    profile: ResponseUserInfoProfile | None = None
+
+
+class RequestLanguage(BaseModel):
+    locate: str
+    language: typing.Language
+
+
+class ResponseLanguage(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    value: str

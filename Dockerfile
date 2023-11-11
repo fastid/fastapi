@@ -1,4 +1,4 @@
-FROM python:3.11-bookworm as builder
+FROM python:3.12-bookworm as builder
 
 ENV PIP_ROOT_USER_ACTION=ignore
 ENV BUILD_DIR=/opt/build
@@ -21,7 +21,7 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false --local
 RUN poetry build
 
-FROM python:3.11-bookworm
+FROM python:3.12-bookworm
 
 ENV PIP_ROOT_USER_ACTION=ignore
 ENV PYTHONDONTWRITEBYTECODE 1

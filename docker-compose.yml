@@ -1,6 +1,6 @@
 x-dockerfile-inline: &dockerfile_inline
     dockerfile_inline: |
-      FROM python:3.11-slim-bookworm
+      FROM python:3.12-slim-bookworm
       ENV PIP_ROOT_USER_ACTION=ignore
       ENV PYTHONDONTWRITEBYTECODE=1
       ENV PYTHONUNBUFFERED=1

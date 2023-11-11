@@ -2,7 +2,7 @@ import os
 from enum import Enum
 from pathlib import Path
 
-from pydantic import SecretStr
+from pydantic import HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -168,7 +168,7 @@ class Settings(BaseSettings):
     recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
     recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
-    link_github: bool = True
+    link_github: HttpUrl = HttpUrl('https://github.com/fastid/')
 
     logo_url: str | None = None
     logo_title: str | None = None

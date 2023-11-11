@@ -13,6 +13,4 @@ async def get() -> models.Config:
         password_policy_min_length=settings.password_policy_min_length,
         password_policy_max_length=settings.password_policy_max_length,
         link_github=settings.link_github,
-        logo_url=settings.logo_url,
-        logo_title=settings.logo_title,
     )

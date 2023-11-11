@@ -7,3 +7,4 @@ async def test_get(db_migrations):
     assert config.jwt_iss
     assert config.password_policy_max_length
     assert config.password_policy_min_length
+    assert config.link_github

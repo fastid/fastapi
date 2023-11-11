@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from .. import services
-from .models import ResponseConfig
+from . import models
 
 router = APIRouter(prefix='/config')
 
@@ -11,6 +11,5 @@ router = APIRouter(prefix='/config')
     summary='Gets the config for the site',
     name='Config for site',
 )
-async def get_config() -> ResponseConfig:
-    config = await services.config.get()
-    return ResponseConfig.model_validate(config)
+async def get_config() -> models.Response.Config:
+    return models.Response.Config.model_validate(await services.config.get())
