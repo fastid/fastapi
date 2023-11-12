@@ -1,1 +1,3 @@
-__all__ = ['user.py']
+from . import user
+
+__all__ = ['user']
