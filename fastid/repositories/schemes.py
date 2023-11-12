@@ -20,8 +20,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from .. import password_hasher, typing
+from .. import typing
 from ..exceptions import InternalServerException
+from ..services import password_hasher
 from . import db
 
 T_Results = TypeVar('T_Results')

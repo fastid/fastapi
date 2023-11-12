@@ -22,17 +22,23 @@ def abort_if_false(ctx, param, value):
     help='Password',
 )
 @click.option(
+    '--admin',
+    is_flag=True,
+    help='Specifies to create a user with administrator access',
+    prompt='You want to create a user with administrator access',
+)
+@click.option(
     '--yes',
     is_flag=True,
     callback=abort_if_false,
     expose_value=False,
     prompt='Are you sure you want to create user?',
 )
-async def create_admin(email, password):
+async def create(email, password, admin):
     if await services.users.get_by_email(email=email):
         click.echo('The user already exists!')
         return
 
-    result = await services.users.create(email=email, password=password)
+    result = await services.users.create(email=email, password=password, admin=admin)
     if result:
         click.echo('User successfully created!')

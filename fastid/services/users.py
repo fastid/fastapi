@@ -1,6 +1,6 @@
-from .. import password_hasher, repositories, typing
+from .. import repositories, typing
 from ..trace import decorator_trace
-from . import models
+from . import models, password_hasher
 
 
 @decorator_trace(name='services.users.create')
@@ -23,5 +23,4 @@ async def get_by_email(*, email: typing.Email) -> models.User | None:
     user = await repositories.users.get_by_email(email=email)
     if user is None:
         return None
-
     return await get_by_id(user_id=typing.UserID(user.user_id))

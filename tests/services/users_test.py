@@ -1,3 +1,5 @@
+from pytest_mock import MockerFixture
+
 from fastid import services, typing
 from fastid.services import models
 
@@ -19,6 +21,12 @@ async def test_get_by_id(user: models.User):
     assert user.profile.timezone == 'UTC'
 
 
+async def test_get_by_id_object_none(user: models.User, mocker: MockerFixture):
+    mocker.patch('fastid.repositories.users.get_by_id', return_value=None)
+    user = await services.users.get_by_id(user_id=user.user_id)
+    assert user is None
+
+
 async def test_get_by_email(user: models.User):
     user = await services.users.get_by_email(email=typing.Email(user.email))
     assert isinstance(user, models.User)
@@ -35,6 +43,12 @@ async def test_get_by_email(user: models.User):
     assert user.profile.language == typing.Language.EN
     assert user.profile.locate == typing.Locate.EN_US
     assert user.profile.timezone == 'UTC'
+
+
+async def test_get_by_email_object_none(user: models.User, mocker: MockerFixture):
+    mocker.patch('fastid.repositories.users.get_by_email', return_value=None)
+    user = await services.users.get_by_email(email=typing.Email(user.email))
+    assert user is None
 
 
 # async def test_signin(user: models.User):

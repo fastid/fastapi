@@ -1,9 +1,10 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from fastid import password_hasher, repositories, typing
+from fastid import repositories, typing
 from fastid.exceptions import InternalServerException
 from fastid.repositories import schemes
+from fastid.services import password_hasher
 
 
 async def test_save(user: schemes.Users):
@@ -63,3 +64,13 @@ async def test_get_primary_key(user: schemes.Users, mocker: MockerFixture):
     user.profile.first_name = 'Lily'
     with pytest.raises(InternalServerException):
         await user.profile.save()
+
+
+async def test_create_invalid_objet(db_migrations, mocker: MockerFixture):
+    mocker.patch('sqlalchemy.engine.result.Result.scalar', return_value=None)
+
+    with pytest.raises(ValueError):
+        await repositories.users.create(
+            email=typing.Email('user@exmaple.com'),
+            password=typing.Password('qwerty'),
+        )
