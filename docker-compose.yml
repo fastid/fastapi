@@ -45,7 +45,6 @@ services:
       --entrypoints.rabbitmq.address=:5672
       --entrypoints.redis.address=:6379
       --entrypoints.postgres.address=:5432
-      --entrypoints.mongo.address=:27017
       --providers.docker
       --providers.docker.endpoint=unix:///var/run/docker.sock
       --providers.docker.exposedByDefault=false
@@ -59,7 +58,6 @@ services:
       - ${RABBITMQ_PORT:-5672}:5672
       - ${REDIS_PORT:-6379}:6379
       - ${DB_PORT:-5432}:5432
-      - ${MONGO_PORT:-27017}:27017
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.tls.yml:/etc/traefik/traefik.tls.yml:ro
@@ -72,7 +70,7 @@ services:
       # HTTP
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.services.traefik.loadbalancer.server.scheme=http"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8000"
       - "traefik.http.routers.traefik.entrypoints=https"
       - "traefik.http.routers.traefik.rule=Host(`traefik.localhost.direct`)"
 
@@ -209,6 +207,27 @@ services:
       - "traefik.tcp.routers.rabbitmq.rule=HostSNI(`*`)"
       - "traefik.tcp.routers.rabbitmq.entrypoints=rabbitmq"
       - "traefik.tcp.services.rabbitmq.loadbalancer.server.port=5672"
+
+#  fastid-airflow:
+#    image: apache/airflow:latest
+#    container_name: fastid-airflow
+#    restart: unless-stopped
+#    networks:
+#      - fastid
+##    healthcheck:
+##      test: sh -c 'netstat -an | grep 1025 > /dev/null; if [ 0 != $? ]; then exit 1; fi;'
+##      interval: 10s
+##      timeout: 5s
+##      retries: 5
+#    labels:
+#      - "traefik.enable=True"
+#
+#      # HTTP
+#      - "traefik.http.routers.smtp.tls=true"
+#      - "traefik.http.services.smtp.loadbalancer.server.scheme=http"
+#      - "traefik.http.services.smtp.loadbalancer.server.port=8080"
+#      - "traefik.http.routers.smtp.rule=Host(`airflow.localhost.direct`)"
+#      - "traefik.http.routers.smtp.entrypoints=https"
 
   fastid-migrations:
     build:

@@ -2,7 +2,7 @@ import os
 from enum import Enum
 from pathlib import Path
 
-from pydantic import SecretStr
+from pydantic import HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -40,9 +40,8 @@ class JWTAlgorithm(str, Enum):
         return [c.value for c in cls]
 
 
-class PasswordHasherMemoryProfile(str, Enum):
-    low: str = 'low'
-    high: str = 'high'
+class Captcha(str, Enum):
+    recaptcha: str = 'recaptcha'
 
 
 class Settings(BaseSettings):
@@ -127,19 +126,14 @@ class Settings(BaseSettings):
     http_client_retries: int = 3
     """ Maximum retries """
 
-    recaptcha_enable: bool = False
-    recaptcha_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-    recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
-
     password_policy_max_length: int = 200
     password_policy_min_length: int = 5
-    password_hasher_memory_profile: PasswordHasherMemoryProfile = PasswordHasherMemoryProfile.high
 
     jwt_secret: SecretStr = SecretStr('jwt_secret')
     jwt_algorithm: JWTAlgorithm = JWTAlgorithm.HS256
     jwt_iss: str = app_name
     jwt_access_token_lifetime: int = 60 * 60
-    jwt_refresh_token_lifetime: int = 60 * 60 * 24 * 30
+    jwt_refresh_token_lifetime: int = 60 * 60 * 24 * 30 * 12
 
     smtp_host: str = 'localhost'
     """Smtp host address as one of the following: an IP address or a domain name"""
@@ -162,6 +156,16 @@ class Settings(BaseSettings):
 
     mime_idstring: str = 'fastid'
     """ Sets the identifier for sending emails """
+
+    captcha: Captcha | None = None
+    captcha_usage: str | None = None
+    recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+
+    link_github: HttpUrl = HttpUrl('https://github.com/fastid/')
+
+    logo_url: str | None = None
+    logo_title: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',
