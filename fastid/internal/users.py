@@ -52,7 +52,7 @@ class EmptyRequest(BaseModel):
 
 @router.post(
     path='/signin/',
-    name='Sign in',
+    summary='Sign in',
     status_code=status.HTTP_201_CREATED,
 )
 async def signin(body: SigninRequest) -> SigninResponse:
@@ -65,7 +65,7 @@ async def signin(body: SigninRequest) -> SigninResponse:
 
 @router.post(
     path='/refresh_token/',
-    name='Updates refresh token',
+    summary='Updates refresh token',
     description='This method is used to update the refresh tokens that are used for the dashboard',
     status_code=status.HTTP_201_CREATED,
 )

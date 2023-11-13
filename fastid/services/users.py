@@ -1,4 +1,7 @@
+import re
+
 from .. import repositories, typing
+from ..exceptions import NotFoundException
 from ..trace import decorator_trace
 from . import models, password_hasher
 
@@ -24,3 +27,16 @@ async def get_by_email(*, email: typing.Email) -> models.User | None:
     if user is None:
         return None
     return await get_by_id(user_id=typing.UserID(user.user_id))
+
+
+@decorator_trace(name='services.users.change_locate')
+async def change_locate(*, user_id: typing.UserID, locate: typing.Locate) -> None:
+    user = await repositories.users.get_by_id(user_id=user_id)
+    if user is None:
+        raise NotFoundException(message='User not found', i18n='user_not_found')
+
+    if result := re.match('^([a-z]+)', locate.value):
+        language = typing.Language(result.group(0))
+        user.profile.locate = locate
+        user.profile.language = language
+        await user.profile.save()

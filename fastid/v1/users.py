@@ -1,13 +1,16 @@
 from datetime import date, datetime
+from typing import Generic, TypeVar
 
 from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
 
 from .. import services, typing
 from ..depends import auth_user_depends
-from ..exceptions import exception_responses
+from ..exceptions import NotFoundException, exception_responses
 
 router = APIRouter(prefix='/users', responses=exception_responses)
+
+Results = TypeVar('Results')
 
 
 class _UserInfoProfile(BaseModel):
@@ -32,10 +35,50 @@ class ResponseUserInfo(BaseModel):
     profile: _UserInfoProfile | None = None
 
 
+class Language(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    value: str
+
+
+class ResponseList(BaseModel, Generic[Results]):
+    results: list[Results]
+
+
+class RequestLanguage(BaseModel):
+    locate: str
+
+
+class ResponseEmpty(BaseModel):
+    pass
+
+
 @router.get(
     path='/info/',
-    name='Info user',
+    summary='Info user',
 )
 async def info(user_id: auth_user_depends) -> ResponseUserInfo:
     user = await services.users.get_by_id(user_id=typing.UserID(user_id))
     return ResponseUserInfo.model_validate(user)
+
+
+@router.get(
+    path='/language/',
+    summary='Get language list',
+)
+async def language_list(user_id: auth_user_depends) -> ResponseList[Language]:
+    languages = await services.language.get_all()
+    return ResponseList[Language].model_validate({'results': languages})
+
+
+@router.post(
+    path='/language/',
+    summary='Save the user language and locate',
+)
+async def language_save(user_id: auth_user_depends, body: RequestLanguage) -> ResponseEmpty:
+    if body.locate not in [locate.value for locate in typing.Locate]:
+        raise NotFoundException(message='Language not found', i18n='language_not_found')
+
+    await services.users.change_locate(user_id=user_id, locate=typing.Locate(body.locate))
+    return ResponseEmpty()

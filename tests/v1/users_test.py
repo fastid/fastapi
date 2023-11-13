@@ -22,3 +22,11 @@ async def test_invalid_token(client: httpx.AsyncClient):
 async def test_invalid_fake_token(client: httpx.AsyncClient):
     response = await client.get(url='/api/v1/users/info/', headers={'Authorization': 'Bearer fake'})
     assert response.status_code == httpx.codes.UNAUTHORIZED
+
+
+async def test_language(client_auth: httpx.AsyncClient):
+    response = await client_auth.get(url='/api/v1/users/language/')
+    assert response.status_code == httpx.codes.OK
+    assert isinstance(response.json().get('results'), list)
+    assert response.json().get('results')[0].get('name') == 'English (United States)'
+    assert response.json().get('results')[0].get('value') == 'en-us'
