@@ -9,3 +9,8 @@ async def test_healthcheck(client: httpx.AsyncClient):
 async def test_raise_error(client: httpx.AsyncClient):
     response = await client.get(url='/healthcheck/?raise_error=true')
     assert response.status_code == httpx.codes.INTERNAL_SERVER_ERROR
+
+
+async def test_internal_server_error(client: httpx.AsyncClient):
+    response = await client.get(url='/healthcheck/?internal_server_error=true')
+    assert response.status_code == httpx.codes.INTERNAL_SERVER_ERROR
