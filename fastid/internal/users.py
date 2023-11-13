@@ -4,8 +4,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from .. import services, typing
 from ..depends import auth_user_internal_token_depends
 from ..exceptions import exception_responses
-
-# from ..depends import auth_user_depends, token_id_depends
 from ..settings import settings
 
 router = APIRouter(responses=exception_responses)

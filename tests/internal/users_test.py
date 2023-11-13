@@ -34,12 +34,28 @@ async def test_signin(client: httpx.AsyncClient, db_migrations):
     assert response.json().get('token_type')
 
 
-async def test_logout(client_internal_auth: httpx.AsyncClient, db_migrations):
+async def test_logout(client_internal_auth: httpx.AsyncClient):
     response = await client_internal_auth.post(
         url='/api/v1/internal/logout/',
         json={},
     )
     assert response.status_code == httpx.codes.OK
+
+
+async def test_without_authorization_token(client: httpx.AsyncClient, db_migrations):
+    response = await client.post(
+        url='/api/v1/internal/logout/',
+        json={},
+    )
+    assert response.status_code == httpx.codes.UNAUTHORIZED
+
+
+async def test_without_authorization_internal_token(client_auth: httpx.AsyncClient):
+    response = await client_auth.post(
+        url='/api/v1/internal/logout/',
+        json={},
+    )
+    assert response.status_code == httpx.codes.UNAUTHORIZED
 
 
 # async def test_signin_not_found_user(client: httpx.AsyncClient, db_migrations):

@@ -15,14 +15,14 @@ access_token_security = Security(
 )
 
 
-async def __auth_user_internal(
+async def __auth_user(
     header: HTTPAuthorizationCredentials = access_token_security,
 ) -> AsyncGenerator[typing.UserID | None, None]:
     if header is None:
         raise UnauthorizedException(message='Invalid token', i18n='invalid_token')
 
     try:
-        token = await services.tokens.get(jwt_token=header.credentials, audience='internal')
+        token = await services.tokens.get(jwt_token=header.credentials)
     except MainException as err:
         raise UnauthorizedException(message='Invalid token', i18n='invalid_token') from err
 
@@ -45,5 +45,5 @@ async def __auth_user_internal_token(
     yield token.token_id
 
 
-auth_user_internal_depends = Annotated[typing.UserID, Depends(__auth_user_internal)]
+auth_user_depends = Annotated[typing.UserID, Depends(__auth_user)]
 auth_user_internal_token_depends = Annotated[typing.UserID, Depends(__auth_user_internal_token)]

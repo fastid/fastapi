@@ -39,7 +39,7 @@ async def test_delete_by_id(user: models.User):
     await services.tokens.delete_by_id(token_id=token.token_id)
 
     with pytest.raises(NotFoundException):
-        await services.tokens.get(jwt_token=token.access_token)
+        await services.tokens.get(jwt_token=token.access_token, audience='test_audience')
 
 
 async def test_signin(user: models.User):

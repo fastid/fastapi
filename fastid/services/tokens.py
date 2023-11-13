@@ -66,6 +66,10 @@ async def reload(*, refresh_token: str, audience: str | None = None) -> models.T
 
 @decorator_trace(name='services.tokens.get')
 async def get(*, jwt_token: str, audience: str | None = None) -> models.Token:
+    options = {}
+    if audience is None:
+        options['verify_aud'] = False
+
     try:
         data = jwt.decode(
             jwt=jwt_token,
@@ -74,6 +78,7 @@ async def get(*, jwt_token: str, audience: str | None = None) -> models.Token:
             audience=audience,
             issuer=settings.jwt_iss,
             verify=True,
+            options=options,
         )
     except PyJWTError as err:
         raise NotFoundException(
@@ -81,7 +86,14 @@ async def get(*, jwt_token: str, audience: str | None = None) -> models.Token:
             i18n='token_not_found',
             params={'error': str(err)},
         ) from err
+
     token = await repositories.tokens.get_by_id(token_id=typing.TokenID(uuid.UUID(data.get('jti'))))
+    if token is None:
+        raise NotFoundException(
+            message='Token not found',
+            i18n='token_not_found',
+            params={},
+        )
 
     return models.Token(
         access_token=token.access_token,
