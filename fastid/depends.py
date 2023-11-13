@@ -15,7 +15,7 @@ access_token_security = Security(
 )
 
 
-async def __auth_user(
+async def __auth_user_internal(
     header: HTTPAuthorizationCredentials = access_token_security,
 ) -> AsyncGenerator[typing.UserID | None, None]:
     if header is None:
@@ -26,12 +26,12 @@ async def __auth_user(
     except MainException as err:
         raise UnauthorizedException(message='Invalid token', i18n='invalid_token') from err
 
-    cxt_user_id_token = cxt_user_id.set(token.user_id)
+    cxt_token = cxt_user_id.set(token.user_id)
     yield token.user_id
-    cxt_user_id.reset(cxt_user_id_token)
+    cxt_user_id.reset(cxt_token)
 
 
-async def __token_id(
+async def __auth_user_internal_token(
     header: HTTPAuthorizationCredentials = access_token_security,
 ) -> AsyncGenerator[typing.TokenID | None, None]:
     if header is None:
@@ -45,5 +45,5 @@ async def __token_id(
     yield token.token_id
 
 
-auth_user_depends = Annotated[typing.UserID, Depends(__auth_user)]
-token_id_depends = Annotated[typing.UserID, Depends(__token_id)]
+auth_user_internal_depends = Annotated[typing.UserID, Depends(__auth_user_internal)]
+auth_user_internal_token_depends = Annotated[typing.UserID, Depends(__auth_user_internal_token)]

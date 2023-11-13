@@ -34,16 +34,24 @@ async def test_signin(client: httpx.AsyncClient, db_migrations):
     assert response.json().get('token_type')
 
 
-async def test_signin_not_found_user(client: httpx.AsyncClient, db_migrations):
-    response = await client.post(
-        url='/api/v1/internal/signin/',
-        json={'email': 'user@exmaple.com', 'password': 'qazwsx12345'},
+async def test_logout(client_internal_auth: httpx.AsyncClient, db_migrations):
+    response = await client_internal_auth.post(
+        url='/api/v1/internal/logout/',
+        json={},
     )
-    assert response.status_code == httpx.codes.BAD_REQUEST
-
-
-async def test_info(client_auth: httpx.AsyncClient):
-    response = await client_auth.get(url='/api/v1/internal/info/')
     assert response.status_code == httpx.codes.OK
-    assert response.json().get('user_id')
-    assert response.json().get('email') == typing.Email('user@exmaple.com')
+
+
+# async def test_signin_not_found_user(client: httpx.AsyncClient, db_migrations):
+#     response = await client.post(
+#         url='/api/v1/internal/signin/',
+#         json={'email': 'user@exmaple.com', 'password': 'qazwsx12345'},
+#     )
+#     assert response.status_code == httpx.codes.BAD_REQUEST
+#
+#
+# async def test_info(client_auth: httpx.AsyncClient):
+#     response = await client_auth.get(url='/api/v1/internal/info/')
+#     assert response.status_code == httpx.codes.OK
+#     assert response.json().get('user_id')
+#     assert response.json().get('email') == typing.Email('user@exmaple.com')

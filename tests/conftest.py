@@ -48,12 +48,12 @@ async def client(app: FastAPI) -> AsyncGenerator[httpx.AsyncClient, None]:
 
 
 @pytest.fixture()
-async def client_auth(app: FastAPI, db_migrations) -> AsyncGenerator[httpx.AsyncClient, None]:
-    user_id = await repositories.users.create(
+async def client_internal_auth(app: FastAPI, db_migrations) -> AsyncGenerator[httpx.AsyncClient, None]:
+    user = await services.users.create(
         email=typing.Email('user@exmaple.com'),
         password=typing.Password('qwerty'),
     )
-    token = await services.tokens.create(audience='internal', user_id=user_id)
+    token = await services.tokens.create(audience='internal', user_id=user.user_id)
     headers = {
         'x-real-ip': '127.0.0.1',
         'Authorization': f'Bearer {token.access_token}',

@@ -3,12 +3,28 @@ from typing import Any, Callable, Coroutine, Type, TypeVar, Union
 from fastapi import HTTPException, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import ORJSONResponse
+from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import Response
 
 from .logger import logger
 
 ExceptionType = TypeVar('ExceptionType')
+
+
+class ModelI18nException(BaseModel):
+    message: str
+    params: dict
+
+
+class ModelMessageException(BaseModel):
+    message: str
+    i18n: ModelI18nException
+
+
+class ModelException(BaseModel):
+    error: ModelMessageException
+    errors: dict[str, ModelMessageException]
 
 
 class MainException(HTTPException):
@@ -169,4 +185,14 @@ exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Corouti
     JWTSignatureExpiredException: exception(JWTSignatureExpiredException),
     UnauthorizedException: exception(UnauthorizedException),
     InternalServerException: exception(InternalServerException),
+}
+
+exception_responses: dict[int | str, dict[str, Any]] | None = {
+    404: {'model': ModelException},
+    403: {'model': ModelException},
+    401: {'model': ModelException},
+    409: {'model': ModelException},
+    400: {'model': ModelException},
+    422: {'model': ModelException},
+    500: {'model': ModelException},
 }

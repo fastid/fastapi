@@ -1,6 +1,11 @@
 from fastapi import APIRouter
 
-router = APIRouter(tags=['Health check'])
+from fastid.exceptions import exception_responses
+
+router = APIRouter(
+    tags=['Health check'],
+    responses=exception_responses,
+)
 
 
 @router.get(path='/healthcheck/', include_in_schema=False)

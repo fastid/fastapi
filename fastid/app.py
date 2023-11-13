@@ -93,7 +93,7 @@ app.include_router(handlers.healthcheck.router)
 
 # Internal API
 app.include_router(internal.config.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
-# app.include_router(internal.users.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
+app.include_router(internal.users.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
 
 
 app.mount(

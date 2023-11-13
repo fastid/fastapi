@@ -1,15 +1,15 @@
 """First commit
 
-Revision ID: 91d2b189df86
+Revision ID: 608d488a455f
 Revises:
-Create Date: 2023-11-08 00:37:31.476720
+Create Date: 2023-11-13 20:23:30.032787
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers
-revision = '91d2b189df86'
+revision = '608d488a455f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,7 @@ def upgrade() -> None:
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('email', sa.String(length=200), nullable=True),
         sa.Column('password', sa.String(length=200), nullable=True),
+        sa.Column('admin', sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint('user_id'),
         sa.UniqueConstraint('email'),
     )
@@ -35,9 +36,13 @@ def upgrade() -> None:
         sa.Column('first_name', sa.String(length=200), nullable=True),
         sa.Column('last_name', sa.String(length=200), nullable=True),
         sa.Column('date_birth', sa.Date(), nullable=True),
-        sa.Column('gender', sa.Enum('none', 'male', 'female', name='gender'), nullable=True),
-        sa.Column('language', sa.Enum('en', 'ru', name='language'), nullable=False),
-        sa.Column('locate', sa.String(length=5), nullable=False),
+        sa.Column('gender', sa.Enum('NONE', 'MALE', 'FEMALE', name='gender'), nullable=True),
+        sa.Column('language', sa.Enum('EN', 'RU', name='language'), nullable=False),
+        sa.Column(
+            'locate',
+            sa.Enum('EN_US', 'EN_GB', 'EN_AU', 'EN_IE', 'EN_IL', 'EN_IN', 'EN_NZ', 'EN_SG', 'RU', name='locate'),
+            nullable=False,
+        ),
         sa.Column('timezone', sa.String(length=200), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
