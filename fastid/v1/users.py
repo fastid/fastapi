@@ -58,6 +58,10 @@ class RequestLanguage(BaseModel):
     locate: str
 
 
+class RequestTimezone(BaseModel):
+    timezone: str
+
+
 class ResponseEmpty(BaseModel):
     pass
 
@@ -99,3 +103,12 @@ async def language_save(user_id: auth_user_depends, body: RequestLanguage) -> Re
 async def timezone_list() -> ResponseList[Timezone]:
     timezone = await services.timezone.get_all()
     return ResponseList[Timezone].model_validate({'results': timezone})
+
+
+@router.post(
+    path='/timezone/',
+    summary='Save the user timezone',
+)
+async def timezone_save(user_id: auth_user_depends, body: RequestTimezone) -> ResponseEmpty:
+    await services.users.change_timezone(user_id=user_id, timezone=body.timezone)
+    return ResponseEmpty()

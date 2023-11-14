@@ -1,4 +1,5 @@
 import re
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .. import repositories, typing
 from ..exceptions import NotFoundException
@@ -40,3 +41,18 @@ async def change_locate(*, user_id: typing.UserID, locate: typing.Locate) -> Non
         user.profile.locate = locate
         user.profile.language = language
         await user.profile.save()
+
+
+@decorator_trace(name='services.users.change_timezone')
+async def change_timezone(*, user_id: typing.UserID, timezone: str) -> None:
+    user = await repositories.users.get_by_id(user_id=user_id)
+    if user is None:
+        raise NotFoundException(message='User not found', i18n='user_not_found')
+
+    try:
+        ZoneInfo(timezone)
+    except ZoneInfoNotFoundError as err:
+        raise NotFoundException(message='Timezone not found', i18n='timezone_not_found') from err
+
+    user.profile.timezone = timezone
+    await user.profile.save()
