@@ -21,7 +21,7 @@ opentelemetry-exporter-otlp-proto-grpc = "^1.21.0"
 sqlalchemy = {extras = ["asyncio", "aiosqlite"], version = "^2.0.23"}
 asyncpg = "^0.29.0"
 prometheus-fastapi-instrumentator = "^6.1.0"
-phonenumbers = "^8.13.24"
+phonenumbers = "^8.13.25"
 alembic = "^1.12.0"
 argon2-cffi = "^23.1.0"
 pyjwt = "^2.8.0"
