@@ -56,6 +56,7 @@ class User(CommonModel):
     created_at: datetime
     updated_at: datetime
     password: typing.Password
+    admin: bool
     profile: Profile | None = None
 
 

@@ -32,6 +32,7 @@ class ResponseUserInfo(BaseModel):
     updated_at: datetime
     email: typing.Email
     user_id: typing.UserID
+    admin: bool
     profile: _UserInfoProfile | None = None
 
 
