@@ -11,6 +11,7 @@ Email = NewType('Email', EmailStr)
 Password = NewType('Password', str)
 TokenID = NewType('TokenID', uuid.UUID)
 SessionID = NewType('SessionID', uuid.UUID)
+Username = NewType('Username', str)
 
 
 class Gender(enum.Enum):

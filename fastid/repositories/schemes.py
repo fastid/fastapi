@@ -102,6 +102,7 @@ class Users(Base):
 
     user_id: Mapped[typing.UserID] = mapped_column(Integer, primary_key=True, autoincrement=True, sort_order=10)
     email: Mapped[typing.Email] = mapped_column(String(200), unique=True, nullable=True, sort_order=60)
+    username: Mapped[typing.Username] = mapped_column(String(200), unique=True, nullable=True, sort_order=65)
     password: Mapped[str] = mapped_column(String(200), nullable=True, sort_order=70)
     # phone: Mapped[str] = mapped_column(BigInteger, nullable=True, sort_order=80)
     admin: Mapped[bool] = mapped_column(Boolean, sort_order=90, default=False)

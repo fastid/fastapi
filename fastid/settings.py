@@ -158,14 +158,11 @@ class Settings(BaseSettings):
     """ Sets the identifier for sending emails """
 
     captcha: Captcha | None = None
-    captcha_usage: str | None = None
+    captcha_usage: str | None = 'signin'
     recaptcha_site_key: str = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
     recaptcha_secret_key: str = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
     link_github: HttpUrl = HttpUrl('https://github.com/fastid/')
-
-    logo_url: str | None = None
-    logo_title: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=f'{base_dir}/.env',

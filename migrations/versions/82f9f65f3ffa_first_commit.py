@@ -1,15 +1,15 @@
 """First commit
 
-Revision ID: 608d488a455f
+Revision ID: 82f9f65f3ffa
 Revises:
-Create Date: 2023-11-13 20:23:30.032787
+Create Date: 2023-11-14 19:38:08.537302
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers
-revision = '608d488a455f'
+revision = '82f9f65f3ffa'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,10 +24,12 @@ def upgrade() -> None:
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('email', sa.String(length=200), nullable=True),
+        sa.Column('username', sa.String(length=200), nullable=True),
         sa.Column('password', sa.String(length=200), nullable=True),
         sa.Column('admin', sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint('user_id'),
         sa.UniqueConstraint('email'),
+        sa.UniqueConstraint('username'),
     )
     op.create_table(
         'profiles',
