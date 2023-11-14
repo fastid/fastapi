@@ -58,3 +58,20 @@ async def test_change_timezone(client_auth: httpx.AsyncClient):
 
     response = await client_auth.get(url='/api/v1/users/info/')
     assert response.json().get('profile').get('timezone') == 'America/Los_Angeles'
+
+
+async def test_profile_save(client_auth: httpx.AsyncClient):
+    response = await client_auth.post(
+        url='/api/v1/users/profile/',
+        json={
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'date_birth': '2000-01-01',
+            'gender': 'male',
+        },
+    )
+    assert response.status_code == httpx.codes.OK
+    assert response.json().get('profile').get('first_name') == 'John'
+    assert response.json().get('profile').get('last_name') == 'Doe'
+    assert response.json().get('profile').get('date_birth') == '2000-01-01'
+    assert response.json().get('profile').get('gender') == 'male'

@@ -1,4 +1,5 @@
 import re
+from datetime import date
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .. import repositories, typing
@@ -56,3 +57,24 @@ async def change_timezone(*, user_id: typing.UserID, timezone: str) -> None:
 
     user.profile.timezone = timezone
     await user.profile.save()
+
+
+@decorator_trace(name='services.users.profile_save')
+async def profile_save(
+    *,
+    user_id: typing.UserID,
+    first_name: str,
+    last_name: str,
+    date_birth: date,
+    gender: typing.Gender,
+) -> models.User | None:
+    user = await repositories.users.get_by_id(user_id=user_id)
+    if user is None:
+        raise NotFoundException(message='User not found', i18n='user_not_found')
+
+    user.profile.first_name = first_name
+    user.profile.last_name = last_name
+    user.profile.date_birth = date_birth
+    user.profile.gender = gender
+    await user.profile.save()
+    return await get_by_id(user_id=typing.UserID(user.user_id))

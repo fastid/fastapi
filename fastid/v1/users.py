@@ -36,6 +36,13 @@ class ResponseUserInfo(BaseModel):
     profile: _UserInfoProfile | None = None
 
 
+class RequestUserInfo(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    date_birth: date | None = None
+    gender: typing.Gender | None = None
+
+
 class Language(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -73,6 +80,21 @@ class ResponseEmpty(BaseModel):
 )
 async def info(user_id: auth_user_depends) -> ResponseUserInfo:
     user = await services.users.get_by_id(user_id=typing.UserID(user_id))
+    return ResponseUserInfo.model_validate(user)
+
+
+@router.post(
+    path='/profile/',
+    summary='Save user profile',
+)
+async def profile_save(user_id: auth_user_depends, body: RequestUserInfo) -> ResponseUserInfo:
+    user = await services.users.profile_save(
+        user_id=typing.UserID(user_id),
+        last_name=body.last_name,
+        first_name=body.first_name,
+        date_birth=body.date_birth,
+        gender=body.gender,
+    )
     return ResponseUserInfo.model_validate(user)
 
 

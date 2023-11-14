@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from pytest_mock import MockerFixture
 
@@ -76,3 +78,29 @@ async def test_change_timezone(user: models.User):
 
     with pytest.raises(NotFoundException):
         await services.users.change_timezone(user_id=user.user_id, timezone='America/Los_Angeles_fake')
+
+
+async def test_profile_save(user: models.User):
+    await services.users.profile_save(
+        user_id=user.user_id,
+        first_name='John',
+        last_name='Doe',
+        date_birth=date(year=2000, month=1, day=1),
+        gender=typing.Gender.MALE,
+    )
+
+    user = await services.users.get_by_id(user_id=user.user_id)
+    if user.profile:
+        assert user.profile.first_name == 'John'
+        assert user.profile.last_name == 'Doe'
+        assert str(user.profile.date_birth) == '2000-01-01'
+        assert user.profile.gender == typing.Gender.MALE
+
+    with pytest.raises(NotFoundException):
+        await services.users.profile_save(
+            user_id=typing.UserID(9999),
+            first_name='John',
+            last_name='Doe',
+            date_birth=date(year=2000, month=1, day=1),
+            gender=typing.Gender.MALE,
+        )
