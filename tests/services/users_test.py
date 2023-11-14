@@ -1,6 +1,8 @@
+import pytest
 from pytest_mock import MockerFixture
 
 from fastid import services, typing
+from fastid.exceptions import NotFoundException
 from fastid.services import models
 
 
@@ -49,6 +51,17 @@ async def test_get_by_email_object_none(user: models.User, mocker: MockerFixture
     mocker.patch('fastid.repositories.users.get_by_email', return_value=None)
     user = await services.users.get_by_email(email=typing.Email(user.email))
     assert user is None
+
+
+async def test_change_locate(user: models.User):
+    await services.users.change_locate(user_id=user.user_id, locate=typing.Locate.EN_GB)
+    user = await services.users.get_by_id(user_id=user.user_id)
+    if user.profile:
+        assert user.profile.locate == typing.Locate.EN_GB
+        assert user.profile.language == typing.Language.EN
+
+    with pytest.raises(NotFoundException):
+        await services.users.change_locate(user_id=typing.UserID(9999), locate=typing.Locate.EN_GB)
 
 
 # async def test_signin(user: models.User):

@@ -57,3 +57,10 @@ class User(CommonModel):
     updated_at: datetime
     password: typing.Password
     profile: Profile | None = None
+
+
+class Timezone(CommonModel):
+    en: str
+    ru: str
+    timezone: str
+    offset: str

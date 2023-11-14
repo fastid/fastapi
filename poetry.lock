@@ -1881,7 +1881,7 @@ files = [
 
 [package.dependencies]
 aiosqlite = {version = "*", optional = true, markers = "extra == \"aiosqlite\""}
-greenlet = {version = "!=0.4.17", optional = true, markers = "platform_machine == \"aarch64\" or platform_machine == \"ppc64le\" or platform_machine == \"x86_64\" or platform_machine == \"amd64\" or platform_machine == \"AMD64\" or platform_machine == \"win32\" or platform_machine == \"WIN32\""}
+greenlet = {version = "!=0.4.17", optional = true, markers = "platform_machine == \"aarch64\" or platform_machine == \"ppc64le\" or platform_machine == \"x86_64\" or platform_machine == \"amd64\" or platform_machine == \"AMD64\" or platform_machine == \"win32\" or platform_machine == \"WIN32\" or extra == \"aiosqlite\" or extra == \"asyncio\""}
 mypy = {version = ">=0.910", optional = true, markers = "extra == \"mypy\""}
 typing-extensions = ">=4.2.0"
 
@@ -1926,6 +1926,20 @@ anyio = ">=3.4.0,<5"
 
 [package.extras]
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyaml"]
+
+[[package]]
+name = "timezones"
+version = "2.2.0"
+description = "A Python library that provides better selection of common timezones, can output HTML and auto select the best timezone based on user's IP."
+optional = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "timezones-2.2.0-py3-none-any.whl", hash = "sha256:f6724d1d043aa06e004ea2dcb29542c0dbe79df1046e73b5d454aed71857b8e2"},
+    {file = "timezones-2.2.0.tar.gz", hash = "sha256:6981c1fb1e1c98277458a774aeeb9a4f605c740df6ae258f89916e9e650c283b"},
+]
+
+[package.extras]
+geoip = ["geoip2 (>=4.5.0,<5.0.0)"]
 
 [[package]]
 name = "typing-extensions"
@@ -2362,4 +2376,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "b11e8f27a246191ae5675e9b1ccf0c3c03e55e1c8ce897cf6be6505fdef5865d"
+content-hash = "8ccb63b81033f85457c9a89add5b504a23d13018bf281618ca85e0f837fd641f"

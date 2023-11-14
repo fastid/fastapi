@@ -42,6 +42,14 @@ class Language(BaseModel):
     value: str
 
 
+class Timezone(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    en: str
+    ru: str
+    timezone: str
+    offset: str
+
+
 class ResponseList(BaseModel, Generic[Results]):
     results: list[Results]
 
@@ -67,7 +75,7 @@ async def info(user_id: auth_user_depends) -> ResponseUserInfo:
     path='/language/',
     summary='Get language list',
 )
-async def language_list(user_id: auth_user_depends) -> ResponseList[Language]:
+async def language_list() -> ResponseList[Language]:
     languages = await services.language.get_all()
     return ResponseList[Language].model_validate({'results': languages})
 
@@ -82,3 +90,12 @@ async def language_save(user_id: auth_user_depends, body: RequestLanguage) -> Re
 
     await services.users.change_locate(user_id=user_id, locate=typing.Locate(body.locate))
     return ResponseEmpty()
+
+
+@router.get(
+    path='/timezone/',
+    summary='Get timezone list',
+)
+async def timezone_list() -> ResponseList[Timezone]:
+    timezone = await services.timezone.get_all()
+    return ResponseList[Timezone].model_validate({'results': timezone})
