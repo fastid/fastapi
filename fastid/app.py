@@ -47,7 +47,7 @@ app = FastAPI(
         'name': 'MIT',
         'url': 'https://github.com/fastid/fastapi/blob/main/LICENSE',
     },
-    contact={'name': 'Github', 'url': 'https://github.com/fastid/'},
+    contact={'name': 'Github', 'url': settings.link_github},
     exception_handlers=exc_handlers,
 )
 

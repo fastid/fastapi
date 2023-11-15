@@ -65,3 +65,10 @@ class Timezone(CommonModel):
     ru: str
     timezone: str
     offset: str
+
+
+class Session(CommonModel):
+    session_id: typing.SessionID
+    session_key: str
+    expires_at: datetime
+    data: dict

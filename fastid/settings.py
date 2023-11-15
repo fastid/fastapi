@@ -34,11 +34,6 @@ class JWTAlgorithm(str, Enum):
     HS384: str = 'HS384'
     HS512: str = 'HS512'
 
-    @classmethod
-    def get_all(cls) -> list[str]:
-        """Returns a list of all signature methods"""
-        return [c.value for c in cls]
-
 
 class Captcha(str, Enum):
     recaptcha: str = 'recaptcha'

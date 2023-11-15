@@ -76,23 +76,6 @@ class RecaptchaVerifyFailException(MainException):
         self.error = message
 
 
-class JWTAudienceException(MainException):
-    def __init__(
-        self,
-        message: str = "JWT Audience doesn't match",
-        i18n: str | None = None,
-        params: dict | None = None,
-    ):
-        super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST, i18n=i18n, params=params)
-        self.error = message
-
-
-class JWTSignatureExpiredException(MainException):
-    def __init__(self, message: str = 'JWT Signature has expired', i18n: str | None = None, params: dict | None = None):
-        super().__init__(message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, i18n=i18n, params=params)
-        self.error = message
-
-
 class InternalServerException(MainException):
     def __init__(self, message: str = 'Internal server error', i18n: str | None = None, params: dict | None = None):
         super().__init__(message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, i18n=i18n, params=params)
@@ -108,8 +91,6 @@ def exception(exc_type: ExceptionType):
             | ConflictException
             | BadRequestException
             | RecaptchaVerifyFailException
-            | JWTSignatureExpiredException
-            | JWTAudienceException
             | UnauthorizedException
             | InternalServerException
         ),
@@ -181,8 +162,6 @@ exc_handlers: dict[Union[int, Type[Exception]], Callable[[Request, Any], Corouti
     ConflictException: exception(ConflictException),
     BadRequestException: exception(BadRequestException),
     RecaptchaVerifyFailException: exception(RecaptchaVerifyFailException),
-    JWTAudienceException: exception(JWTAudienceException),
-    JWTSignatureExpiredException: exception(JWTSignatureExpiredException),
     UnauthorizedException: exception(UnauthorizedException),
     InternalServerException: exception(InternalServerException),
 }
