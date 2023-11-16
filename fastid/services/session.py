@@ -20,8 +20,10 @@ async def create(
 
 
 @decorator_trace(name='services.session.get_by_id')
-async def get_by_id(*, session_id: typing.SessionID) -> models.Session:
+async def get_by_id(*, session_id: typing.SessionID) -> models.Session | None:
     session = await repositories.session.get_by_id(session_id=session_id)
+    if session is None:
+        return None
     return models.Session.model_validate(session)
 
 

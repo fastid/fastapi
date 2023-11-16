@@ -2,7 +2,7 @@ from typing import AsyncGenerator
 
 import pytest
 
-from fastid import services
+from fastid import services, typing
 from fastid.services import models
 
 
@@ -22,6 +22,11 @@ async def test_get_by_id(session: models.Session):
     assert session.session_id
     assert session.session_key
     assert session.expires_at
+
+
+async def test_get_by_id_not_found(session: models.Session):
+    session = await services.session.get_by_id(session_id=typing.SessionID(999))
+    assert session is None
 
 
 async def test_get_by_session_key(session: models.Session):
