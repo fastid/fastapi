@@ -71,10 +71,6 @@ async def signin(body: SigninRequest) -> SessionResponse:
     session = await services.users.signin(email=body.email, password=body.password)
     return SessionResponse(session_key=session.session_key)
 
-    # user = await services.users.get_by_email(email=body.email)
-    # token = await services.tokens.signin(email=body.email, password=body.password)
-    # return SigninResponse.model_validate(token)
-
 
 @router.post(
     path='/signin/{session_key}/',
@@ -84,12 +80,6 @@ async def signin(body: SigninRequest) -> SessionResponse:
 async def signin_session(body: SigninSessionKeyRequest, session_key: str) -> SigninResponse:
     token = await services.users.signin_session(session_key=session_key)
     return SigninResponse.model_validate(token)
-
-    # if settings.captcha and settings.captcha == 'recaptcha' and 'signin' in settings.captcha_usage.split(','):
-    #     await services.recaptcha.check_verify(recaptcha_verify=body.captcha)
-    #
-    # session = await services.users.signin_session(email=body.email, password=body.password)
-    # return SessionResponse(session_key=session.session_key)
 
 
 @router.post(
