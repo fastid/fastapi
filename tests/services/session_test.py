@@ -24,6 +24,14 @@ async def test_get_by_id(session: models.Session):
     assert session.expires_at
 
 
+async def test_get_by_session_key(session: models.Session):
+    session = await services.session.get_by_session_key(session_key=session.session_key)
+    assert isinstance(session, models.Session)
+    assert session.session_id
+    assert session.session_key
+    assert session.expires_at
+
+
 async def test_delete_by_id(session: models.Session):
     result = await services.session.delete_by_id(session_id=session.session_id)
     assert result

@@ -2,6 +2,7 @@ import hashlib
 import uuid
 from datetime import datetime
 from typing import Union
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import delete, insert, select
 
@@ -37,7 +38,10 @@ async def create(
 
 @decorator_trace(name='repositories.session.get_by_id')
 async def get_by_id(*, session_id: typing.SessionID) -> schemes.Sessions | None:
-    stmt = select(schemes.Sessions).where(schemes.Sessions.session_id == session_id)
+    stmt = select(schemes.Sessions).where(
+        schemes.Sessions.session_id == session_id,
+        schemes.Sessions.expires_at >= datetime.now(tz=ZoneInfo('UTC')),
+    )
 
     async with db.async_session() as session:
         return await session.scalar(stmt)
@@ -45,15 +49,20 @@ async def get_by_id(*, session_id: typing.SessionID) -> schemes.Sessions | None:
 
 @decorator_trace(name='repositories.session.get_by_session_key')
 async def get_by_session_key(*, session_key: str) -> schemes.Sessions | None:
-    stmt = select(schemes.Sessions).where(schemes.Sessions.session_key == session_key)
-
+    stmt = select(schemes.Sessions).where(
+        schemes.Sessions.session_key == session_key,
+        schemes.Sessions.expires_at >= datetime.now(tz=ZoneInfo('UTC')),
+    )
     async with db.async_session() as session:
         return await session.scalar(stmt)
 
 
 @decorator_trace(name='repositories.session.delete_by_id')
 async def delete_by_id(*, session_id: typing.SessionID) -> bool:
-    stmt = delete(schemes.Sessions).where(schemes.Sessions.session_id == session_id)
+    stmt = delete(schemes.Sessions).where(
+        schemes.Sessions.session_id == session_id,
+        schemes.Sessions.expires_at >= datetime.now(tz=ZoneInfo('UTC')),
+    )
 
     async with db.async_session() as session:
         result = await session.execute(stmt)

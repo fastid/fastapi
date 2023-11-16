@@ -1,15 +1,15 @@
 """First commit
 
-Revision ID: 82f9f65f3ffa
+Revision ID: 60f64b35e617
 Revises:
-Create Date: 2023-11-14 19:38:08.537302
+Create Date: 2023-11-15 19:15:15.546612
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers
-revision = '82f9f65f3ffa'
+revision = '60f64b35e617'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -54,7 +54,8 @@ def upgrade() -> None:
     )
     op.create_table(
         'sessions',
-        sa.Column('session_id', sa.Uuid(), nullable=False),
+        sa.Column('session_id', sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column('session_key', sa.String(length=64), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
@@ -63,6 +64,7 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], onupdate='CASCADE', ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('session_id'),
+        sa.UniqueConstraint('session_key'),
     )
     op.create_table(
         'tokens',

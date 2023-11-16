@@ -25,6 +25,14 @@ async def get_by_id(*, session_id: typing.SessionID) -> models.Session:
     return models.Session.model_validate(session)
 
 
+@decorator_trace(name='services.session.get_by_session_key')
+async def get_by_session_key(*, session_key: str) -> models.Session | None:
+    session = await repositories.session.get_by_session_key(session_key=session_key)
+    if session is None:
+        return None
+    return models.Session.model_validate(session)
+
+
 @decorator_trace(name='services.session.delete_by_id')
 async def delete_by_id(*, session_id: typing.SessionID) -> bool:
     return await repositories.session.delete_by_id(session_id=session_id)

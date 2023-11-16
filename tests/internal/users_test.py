@@ -15,17 +15,22 @@ async def test_signin(client: httpx.AsyncClient, db_migrations):
     )
 
     assert response.status_code == httpx.codes.CREATED
+    assert response.json().get('session_key')
+
+    session_key = response.json().get('session_key')
+    response = await client.post(
+        url=f'/api/v1/internal/signin/{session_key}/',
+        json={},
+    )
+    assert response.status_code == httpx.codes.CREATED
     assert response.json().get('access_token')
     assert response.json().get('refresh_token')
     assert response.json().get('expires_in')
     assert response.json().get('token_type')
 
-    refresh_token = response.json().get('refresh_token')
     response = await client.post(
         url='/api/v1/internal/refresh_token/',
-        json={
-            'refresh_token': refresh_token,
-        },
+        json={'refresh_token': response.json().get('refresh_token')},
     )
     assert response.status_code == httpx.codes.CREATED
     assert response.json().get('access_token')

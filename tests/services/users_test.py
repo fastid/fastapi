@@ -4,7 +4,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from fastid import services, typing
-from fastid.exceptions import NotFoundException
+from fastid.exceptions import BadRequestException, NotFoundException
 from fastid.services import models
 
 
@@ -104,3 +104,38 @@ async def test_profile_save(user: models.User):
             date_birth=date(year=2000, month=1, day=1),
             gender=typing.Gender.MALE,
         )
+
+
+async def test_signin(user: models.User):
+    session = await services.users.signin(email=user.email, password=typing.Password('password'))
+    assert session.session_id
+    assert session.session_key
+    assert session.expires_at
+    assert session.data.get('user_id')
+
+    with pytest.raises(NotFoundException):
+        await services.users.signin(email=typing.Email('user-not-found'), password=typing.Password('password'))
+
+    with pytest.raises(BadRequestException):
+        await services.users.signin(email=user.email, password=typing.Password('password-fail'))
+
+
+async def test_signin_session(user: models.User):
+    session = await services.users.signin(email=user.email, password=typing.Password('password'))
+    assert session.session_id
+    assert session.session_key
+    assert session.expires_at
+    assert session.data.get('user_id')
+
+    token = await services.users.signin_session(session_key=session.session_key)
+    assert token.access_token
+    assert token.refresh_token
+    assert token.user_id
+    assert token.token_id
+    assert token.token_type
+    assert token.expires_in
+
+
+async def test_signin_session_not_found(user: models.User):
+    with pytest.raises(NotFoundException):
+        await services.users.signin_session(session_key='fake-token')
