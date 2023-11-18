@@ -1,0 +1,1203 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+from ..services import models
+from ..trace import decorator_trace
+
+TIMEZONE = [
+    {'code': 'Pacific/Niue', 'en': 'Alofi', 'ru': 'Алофи'},
+    {'code': 'Pacific/Pago_Pago', 'en': 'Pago Pago', 'ru': 'Паго-Паго'},
+    {
+        'code': 'Pacific/Honolulu',
+        'en': 'Honolulu, Hilo, Mililani',
+        'ru': 'Гонолулу, Хило, Милилани',
+    },
+    {'code': 'Pacific/Rarotonga', 'en': 'Avarua,Aitutaki', 'ru': 'Аваруа,Аитутаки'},
+    {
+        'code': 'Pacific/Tahiti',
+        'en': 'Papeete, Huahine, Maupiti',
+        'ru': 'Папеэте, Хуахине, Маупити',
+    },
+    {'code': 'Pacific/Marquesas', 'en': 'Nuku Hiva', 'ru': 'Нуку Хива'},
+    {
+        'code': 'America/Anchorage',
+        'en': 'Anchorage, Fairbanks, Sitka',
+        'ru': 'Анкоридж, Фэрбанкс, Ситка',
+    },
+    {'code': 'America/Juneau', 'en': 'Juneau,Ketchikan', 'ru': 'Джуно,Кетчикан'},
+    {
+        'code': 'America/Los_Angeles',
+        'en': 'San Francisco, Los Angeles, San Diego',
+        'ru': 'Сан-Франциско, Лос-Анджелес, Сан-Диего',
+    },
+    {
+        'code': 'America/Tijuana',
+        'en': 'Tijuana, Mexicali, Ensenada',
+        'ru': 'Тихуана, Мехикали, Энсенада',
+    },
+    {
+        'code': 'America/Vancouver',
+        'en': 'Vancouver, Surrey, Burnaby',
+        'ru': 'Ванкувер, Суррей, Бернаби',
+    },
+    {
+        'code': 'America/Boise',
+        'en': 'Boise, Meridian, Idaho Falls',
+        'ru': 'Бойсе, Меридиан, Айдахо-Фолс',
+    },
+    {'code': 'America/Ciudad_Juarez', 'en': 'Ciudad Juarez', 'ru': 'Сьюдад-Хуарес'},
+    {'code': 'America/Dawson', 'en': 'Dawson', 'ru': 'Доусон'},
+    {
+        'code': 'America/Dawson_Creek',
+        'en': 'Fort Saint John, Cranbrook, Dawson Creek',
+        'ru': 'Форт-Сент-Джон, Кранбрук, Досон-Крик',
+    },
+    {
+        'code': 'America/Denver',
+        'en': 'Denver, Albuquerque, Colorado Springs',
+        'ru': 'Денвер, Альбукерке, Колорадо-Спрингс',
+    },
+    {
+        'code': 'America/Edmonton',
+        'en': 'Calgary, Edmonton, Red Deer',
+        'ru': 'Калгари, Эдмонтон, Ред Дир',
+    },
+    {
+        'code': 'America/Hermosillo',
+        'en': 'Hermosillo, Ciudad Obregon, Nogales',
+        'ru': 'Эрмосильо, Сьюдад-Обрегон, Ногалес',
+    },
+    {
+        'code': 'America/Phoenix',
+        'en': 'Phoenix, Tucson, Mesa',
+        'ru': 'Финикс, Тусон, Меса',
+    },
+    {'code': 'America/Whitehorse', 'en': 'Whitehorse', 'ru': 'Уайтхорс'},
+    {
+        'code': 'America/Yellowknife',
+        'en': 'Yellowknife, Hay River, Inuvik',
+        'ru': 'Йеллоунайф, Хей-Ривер, Инувик',
+    },
+    {
+        'code': 'America/Belize',
+        'en': 'Belize City, San Ignacio, Belmopan',
+        'ru': 'Белиз, Сан-Игнасио, Бельмопан',
+    },
+    {
+        'code': 'America/Chicago',
+        'en': 'Chicago, El Paso, Nashville',
+        'ru': 'Чикаго, Эль-Пасо, Нашвилл',
+    },
+    {
+        'code': 'America/Chihuahua',
+        'en': 'Chihuahua, Culiacán, Mazatlan',
+        'ru': 'Чиуауа, Кульякан, Масатлан',
+    },
+    {
+        'code': 'America/Costa_Rica',
+        'en': 'San Jose, Cartago, Puerto Limon',
+        'ru': 'Сан-Хосе, Картаго, Лимон',
+    },
+    {
+        'code': 'America/Guatemala',
+        'en': 'Guatemala City, San Salvador, Quezaltenango',
+        'ru': 'Гватемала, Сан-Сальвадор, Кесальтенанго',
+    },
+    {
+        'code': 'America/Indiana/Knox',
+        'en': 'Evansville, Michigan City, Valparaiso',
+        'ru': 'Эвансвилл, Мичиган Сити, Вальпараисо',
+    },
+    {
+        'code': 'America/Managua',
+        'en': 'Managua, Matagalpa, Leon',
+        'ru': 'Манагуа, Матагальпа, Леон',
+    },
+    {
+        'code': 'America/Matamoros',
+        'en': 'Reynosa,Nuevo Laredo',
+        'ru': 'Рейноса,Нуэво-Ларедо',
+    },
+    {
+        'code': 'America/Menominee',
+        'en': 'Memphis, Jackson, Cleveland',
+        'ru': 'Мемфис, Джексон, Кливленд',
+    },
+    {'code': 'America/Merida', 'en': 'Mérida,Chichen Itza', 'ru': 'Мерида,Чичен-Ица'},
+    {
+        'code': 'America/Mexico_City',
+        'en': 'Mexico, Guadalajara, Leon',
+        'ru': 'Мехико, Гвадалахара, Леон',
+    },
+    {'code': 'America/Monterrey', 'en': 'Monterrey', 'ru': 'Монтеррей'},
+    {
+        'code': 'America/North_Dakota/Center',
+        'en': 'Houston, San Antonio, Dallas',
+        'ru': 'Хьюстон, Сан-Антонио, Даллас',
+    },
+    {
+        'code': 'America/Regina',
+        'en': 'Moose Jaw, Swift Current, Yorkton',
+        'ru': 'Мус-Джо, Свифт-Керрент, Йорктон',
+    },
+    {
+        'code': 'America/Swift_Current',
+        'en': 'Saskatoon,Regina,Prince Albert',
+        'ru': 'Саскатун,Реджайна,Принс-Альберт',
+    },
+    {
+        'code': 'America/Tegucigalpa',
+        'en': 'San Pedro Sula, Tegucigalpa, La Ceiba',
+        'ru': 'Сан-Педро-Сула, Тегусигальпа, Ла-Сейба',
+    },
+    {
+        'code': 'America/Winnipeg',
+        'en': 'Winnipeg, Brandon, Thompson',
+        'ru': 'Виннипег, Брандон, Томпсон',
+    },
+    {
+        'code': 'Pacific/Galapagos',
+        'en': 'Puerto Ayora,Puerto Baquerizo Moreno,Baltra Island',
+        'ru': 'Пуэрто Айора,Пуэрто-Бакерисо-Морено,Бальтра',
+    },
+    {
+        'code': 'America/Atikokan',
+        'en': 'Kenora,Dryden,Red Lake',
+        'ru': 'Кенора,Драйден,Ред-Лейк',
+    },
+    {
+        'code': 'America/Bogota',
+        'en': 'Bogota, Medellin, Cali',
+        'ru': 'Богота, Медельин, Кали',
+    },
+    {
+        'code': 'America/Cancun',
+        'en': 'Cancun, Chetumal, Playa del Carmen',
+        'ru': 'Канкун, Четумаль, Плайя-дель-Кармен',
+    },
+    {
+        'code': 'America/Cayman',
+        'en': 'George Town,Cayman Brac',
+        'ru': 'Джорджтаун,Кайман-Брак',
+    },
+    {
+        'code': 'America/Detroit',
+        'en': 'Detroit, Grand Rapids, Warren',
+        'ru': 'Детройт, Гранд-Рапидс, Уоррен',
+    },
+    {'code': 'America/Grand_Turk', 'en': 'Cockburn Town', 'ru': 'Коберн-Таун'},
+    {
+        'code': 'America/Guayaquil',
+        'en': 'Guayaquil, Quito, Cuenca',
+        'ru': 'Гуаякиль, Кито, Куэнка',
+    },
+    {
+        'code': 'America/Havana',
+        'en': 'Havana, Trinidad, Santiago de Cuba',
+        'ru': 'Гавана, Тринидад, Сантьяго-де-Куба',
+    },
+    {
+        'code': 'America/Indiana/Marengo',
+        'en': 'Indianapolis, Carmel, Kokomo',
+        'ru': 'Индианаполис, Кармел, Кокомо',
+    },
+    {
+        'code': 'America/Indiana/Vevay',
+        'en': 'Fort Wayne,Terre Haute',
+        'ru': 'Форт-Уэйн,Терр Хот',
+    },
+    {
+        'code': 'America/Indianapolis',
+        'en': 'South Bend, Bloomington, Muncie',
+        'ru': 'Саут-Бенд, Блумингтон, Мунчи',
+    },
+    {'code': 'America/Iqaluit', 'en': 'Iqaluit', 'ru': 'Икалуит'},
+    {
+        'code': 'America/Jamaica',
+        'en': 'Kingston, Montego Bay, May Pen',
+        'ru': 'Кингстон, Монтего-Бей, Мей Пен',
+    },
+    {'code': 'America/Kentucky/Monticello', 'en': 'Atlanta', 'ru': 'Атланта'},
+    {
+        'code': 'America/Lima',
+        'en': 'Lima, Panama, Trujillo',
+        'ru': 'Лима, Панама, Трухильо',
+    },
+    {
+        'code': 'America/Louisville',
+        'en': 'Columbus, Louisville, Lexington',
+        'ru': 'Колумбус, Луисвилл, Лексингтон',
+    },
+    {
+        'code': 'America/Montreal',
+        'en': 'Quebec, Montreal, Laval',
+        'ru': 'Квебек, Монреаль, Лаваль',
+    },
+    {
+        'code': 'America/Nassau',
+        'en': 'Nassau, Freeport, George Town',
+        'ru': 'Нассау, Фрипорт, Джордж Таун',
+    },
+    {
+        'code': 'America/New_York',
+        'en': 'New York, Cicero, Philadelphia',
+        'ru': 'Нью-Йорк, Цицеро, Филадельфия',
+    },
+    {
+        'code': 'America/Port-au-Prince',
+        'en': 'Port-au-Prince, Gonaives, Cap-Haitien',
+        'ru': 'Порт-о-Пренс, Гонаив, Кап-Аитьен',
+    },
+    {
+        'code': 'America/Rio_Branco',
+        'en': 'Rio Branco,Tabatinga',
+        'ru': 'Риу-Бранку,Табатинга',
+    },
+    {'code': 'America/Thunder_Bay', 'en': 'Thunder Bay', 'ru': 'Тандер-Бей'},
+    {
+        'code': 'America/Toronto',
+        'en': 'Toronto, Ottawa, Mississauga',
+        'ru': 'Торонто, Оттава, Миссиссага',
+    },
+    {'code': 'Pacific/Easter', 'en': 'Hanga Roa', 'ru': 'Ханга-Роа'},
+    {'code': 'America/Anguilla', 'en': 'The Valley', 'ru': 'Валли'},
+    {'code': 'America/Antigua', 'en': "St. John's", 'ru': 'Сент-Джонс'},
+    {
+        'code': 'America/Aruba',
+        'en': 'Oranjestad,Noord,Palm Beach',
+        'ru': 'Ораньестад,Ноорд,Пальм Бич',
+    },
+    {'code': 'America/Barbados', 'en': 'Bridgetown', 'ru': 'Бриджтаун'},
+    {
+        'code': 'America/Campo_Grande',
+        'en': 'Campo Grande, Dourados, Corumba',
+        'ru': 'Кампу-Гранди, Дорадус, Корумба',
+    },
+    {
+        'code': 'America/Caracas',
+        'en': 'Caracas, Valencia, Maracay',
+        'ru': 'Каракас, Валенсия, Маракай',
+    },
+    {
+        'code': 'America/Cuiaba',
+        'en': 'Cuiabá, Várzea Grande, Rondonopolis',
+        'ru': 'Куяба, Варзеа-Гранди, Рондонополис',
+    },
+    {
+        'code': 'America/Curacao',
+        'en': 'Willemstad,Philipsburg,Grand Case',
+        'ru': 'Виллемстад,Филипсбург,Гран-Каса',
+    },
+    {
+        'code': 'America/Dominica',
+        'en': 'Fort-de-France, Castries, Gros Islet',
+        'ru': 'Фор-де-Франс, Кастри, Грос Ислет',
+    },
+    {
+        'code': 'America/Goose_Bay',
+        'en': 'Happy Valley-Goose Bay,Wabush,Nain',
+        'ru': 'Хеппи-Валли-Гуз-Бэй,Вабуш,Нейн',
+    },
+    {'code': 'America/Grenada', 'en': "Saint George's", 'ru': 'Сент-Джорджес'},
+    {
+        'code': 'America/Guadeloupe',
+        'en': 'Le Gosier, Pointe-a-Pitre, Saint Francois',
+        'ru': 'Ле-Гозье, Пуант-а-Питр, Сент-Франсуа',
+    },
+    {
+        'code': 'America/Guyana',
+        'en': 'Georgetown,New Amsterdam',
+        'ru': 'Джорджтаун,Нью-Амстердам',
+    },
+    {
+        'code': 'America/Halifax',
+        'en': 'Halifax, Saint John, Dartmouth',
+        'ru': 'Галифакс, Сент-Джон, Дартмут',
+    },
+    {'code': 'America/Kralendijk', 'en': 'Kralendijk', 'ru': 'Кралендейк'},
+    {
+        'code': 'America/La_Paz',
+        'en': 'Santa Cruz de la Sierra, El Alto, Cochabamba',
+        'ru': 'Санта-Крус-де-ла-Сьерра, Эль-Альто, Кочабамба',
+    },
+    {
+        'code': 'America/Manaus',
+        'en': 'Manaus, Boa Vista, Parintins',
+        'ru': 'Манаус, Боа-Виста, Паринтинс',
+    },
+    {'code': 'America/Montserrat', 'en': 'Plymouth', 'ru': 'Плимут'},
+    {'code': 'America/Port_of_Spain', 'en': 'Port of Spain', 'ru': 'Порт-оф-Спейн'},
+    {
+        'code': 'America/Porto_Velho',
+        'en': 'Porto Velho,Ji Parana,Vilhena',
+        'ru': 'Порту-Велью,Жи-Парана,Вильена',
+    },
+    {
+        'code': 'America/Puerto_Rico',
+        'en': 'San Juan, Carolina, Ponce',
+        'ru': 'Сан-Хуан, Каролина, Понсе',
+    },
+    {
+        'code': 'America/Santo_Domingo',
+        'en': 'Santo Domingo, Santiago de los Caballeros, Santo Domingo Este',
+        'ru': 'Санто-Доминго, Сантьяго-де-лос-Кабальерос, Санто-Доминго-Есте',
+    },
+    {'code': 'America/St_Barthelemy', 'en': 'Gustavia', 'ru': 'Густавия'},
+    {'code': 'America/St_Kitts', 'en': 'Basseterre', 'ru': 'Бастер'},
+    {'code': 'America/St_Thomas', 'en': 'Charlotte Amalie', 'ru': 'Шарлотта-Амалия'},
+    {'code': 'America/St_Vincent', 'en': 'Kingstown', 'ru': 'Кингстаун'},
+    {
+        'code': 'America/Tortola',
+        'en': 'Road Town,Christiansted',
+        'ru': 'Род-Таун,Кристианстед',
+    },
+    {
+        'code': 'Atlantic/Bermuda',
+        'en': 'St. George,Hamilton',
+        'ru': 'Сент-Джордж,Гамильтон',
+    },
+    {
+        'code': 'America/St_Johns',
+        'en': "Saint John's, Corner Brook, Gander",
+        'ru': 'Сент-Джонс, Корнер-Брук, Гандер',
+    },
+    {
+        'code': 'America/Argentina/Buenos_Aires',
+        'en': 'Buenos Aires, Cordoba, Rosario',
+        'ru': 'Буэнос-Айрес, Кордова, Росарио',
+    },
+    {
+        'code': 'America/Asuncion',
+        'en': 'Asuncion, Ciudad del Este, Encarnación',
+        'ru': 'Асунсьон, Сьюдад-дель-Эсте, Энкарнасьон',
+    },
+    {
+        'code': 'America/Belem',
+        'en': 'Belém, Ananindeua, Santarem',
+        'ru': 'Белен, Ананиндеуа, Сантарен',
+    },
+    {'code': 'America/Cayenne', 'en': 'Paramaribo,Cayenne', 'ru': 'Парамарибо,Кайенна'},
+    {
+        'code': 'America/Fortaleza',
+        'en': 'Fortaleza, Aracaju, Caucaia',
+        'ru': 'Форталеза, Аракажу, Каукая',
+    },
+    {
+        'code': 'America/Maceio',
+        'en': 'Salvador, Maceió, Natal',
+        'ru': 'Салвадор, Масейо, Натал',
+    },
+    {
+        'code': 'America/Montevideo',
+        'en': 'Montevideo, Salto, Paysandu',
+        'ru': 'Монтевидео, Сальто, Пайсанду',
+    },
+    {
+        'code': 'America/Recife',
+        'en': 'Recife, Teresina, Jaboatão dos Guararapes',
+        'ru': 'Ресифи, Терезина, Жабоатан-дус-Гуарарапес',
+    },
+    {
+        'code': 'America/Santarem',
+        'en': 'São Luís, João Pessoa, Campina Grande',
+        'ru': 'Сан-Луис, Жуан-Песоа, Кампина-Гранди',
+    },
+    {
+        'code': 'America/Santiago',
+        'en': 'Santiago, Antofagasta, Vina del Mar',
+        'ru': 'Сантьяго, Антофагаста, Винья-дель-Мар',
+    },
+    {
+        'code': 'America/Sao_Paulo',
+        'en': 'Sao Paulo, Rio de Janeiro, Brasilia',
+        'ru': 'Сан-Паулу, Рио-де-Жанейро, Бразилиа',
+    },
+    {
+        'code': 'America/Godthab',
+        'en': 'Nuuk, Qaqortoq, Maniitsoq',
+        'ru': 'Нуук, Какорток, Маниитсок',
+    },
+    {
+        'code': 'America/Noronha',
+        'en': 'Fernando De Noronha',
+        'ru': 'Фернанду-ди-Норонья',
+    },
+    {'code': 'Atlantic/Azores', 'en': 'Horta', 'ru': 'Орта'},
+    {
+        'code': 'Atlantic/Cape_Verde',
+        'en': 'Praia, Sao Filipe, Mindelo',
+        'ru': 'Прая, Сан-Филип, Минделу',
+    },
+    {
+        'code': 'Africa/Abidjan',
+        'en': 'Abidjan, Bouake, San Pedro',
+        'ru': 'Абиджан, Буаке, Сан-Педро',
+    },
+    {
+        'code': 'Africa/Accra',
+        'en': 'Accra, Kumasi, Tamale',
+        'ru': 'Аккра, Кумаси, Тамале',
+    },
+    {
+        'code': 'Africa/Bamako',
+        'en': 'Bamako, Uagadugu, Bobo Dioulasso',
+        'ru': 'Бамако, Уагадугу, Бобо-Диуласо',
+    },
+    {'code': 'Africa/Banjul', 'en': 'Banjul,Farafenni', 'ru': 'Банжул,Фарафенни'},
+    {
+        'code': 'Africa/Bissau',
+        'en': 'Bissau,Sao Domingos,Bafata',
+        'ru': 'Бисау,Сан-Домингус,Бафата',
+    },
+    {
+        'code': 'Africa/Conakry',
+        'en': 'Conakry,Kankan,Labe',
+        'ru': 'Конакри,Канкан,Лабе',
+    },
+    {'code': 'Africa/Dakar', 'en': 'Dakar, Thies, Mbour', 'ru': 'Дакар, Тиес, Мбур'},
+    {'code': 'Africa/Freetown', 'en': 'Freetown,Bo,Makeni', 'ru': 'Фритаун,Бо,Макени'},
+    {'code': 'Africa/Lome', 'en': 'Lome,Kara,Kpalime', 'ru': 'Ломе,Кара,Кпалиме'},
+    {'code': 'Africa/Monrovia', 'en': 'Monrovia', 'ru': 'Монровия'},
+    {
+        'code': 'Africa/Nouakchott',
+        'en': 'Nouakchott, Nouadhibou, Rosso',
+        'ru': 'Нуакшот, Нуадибу, Росо',
+    },
+    {'code': 'Africa/Sao_Tome', 'en': 'São Tomé', 'ru': 'Сан-Томе'},
+    {
+        'code': 'Atlantic/Canary',
+        'en': 'Las Palmas de Gran Canaria, Santa Cruz de Tenerife, Arona',
+        'ru': 'Лас-Пальмас-де-Гран-Канария, Санта-Крус-де-Тенерифе, Арона',
+    },
+    {'code': 'Atlantic/Faeroe', 'en': 'Kirkjubour', 'ru': 'Киркьюбур'},
+    {
+        'code': 'Atlantic/Reykjavik',
+        'en': 'Reykyavik,Vestmannaeyjar',
+        'ru': 'Рейкьявик,Вестманнаэйяр',
+    },
+    {
+        'code': 'Europe/Dublin',
+        'en': 'Dublin, Swords, Drogheda',
+        'ru': 'Дублин, Свордс, Дроэда',
+    },
+    {
+        'code': 'Europe/Lisbon',
+        'en': 'Lisbon, Vila Nova de Gaia, Matosinhos',
+        'ru': 'Лиссабон, Вила-Нова-ди-Гая, Матозиньюш',
+    },
+    {
+        'code': 'Europe/London',
+        'en': 'London, Birmingham, Leeds',
+        'ru': 'Лондон, Бирмингем, Лидс',
+    },
+    {
+        'code': 'Africa/Algiers',
+        'en': 'Algiers, Oran, Constantine',
+        'ru': 'Алжир, Оран, Константина',
+    },
+    {'code': 'Africa/Bangui', 'en': 'Bangui,Bambari,Nola', 'ru': 'Банги,Бамбари,Нола'},
+    {
+        'code': 'Africa/Brazzaville',
+        'en': 'Brazzaville, Pointe Noire, Dolisie',
+        'ru': 'Браззавиль, Пуэнт-Нуар, Долизи',
+    },
+    {
+        'code': 'Africa/Casablanca',
+        'en': 'Casablanca, Fes, Rabat',
+        'ru': 'Касабланка, Фес, Рабат',
+    },
+    {
+        'code': 'Africa/Douala',
+        'en': 'Douala, Yaoundé, Bamenda',
+        'ru': 'Дуала, Яунде, Баменда',
+    },
+    {'code': 'Africa/El_Aaiun', 'en': 'El-Aaiún,Bir Lehlou', 'ru': 'Эль-Аюн,Бир-Лелу'},
+    {
+        'code': 'Africa/Kinshasa',
+        'en': 'Kinshasa, Loanda, Mbuji-Mayi',
+        'ru': 'Киншаса, Луанда, Мбужи-Майи',
+    },
+    {'code': 'Africa/Lagos', 'en': 'Lagos, Kano, Ibadan', 'ru': 'Лагос, Кано, Ибадан'},
+    {
+        'code': 'Africa/Libreville',
+        'en': 'Libreville, Port-Gentil, Gamba',
+        'ru': 'Либревиль, Порт-Жантиль, Гамба',
+    },
+    {'code': 'Africa/Malabo', 'en': 'Bata,Malabo', 'ru': 'Бата,Малабо'},
+    {
+        'code': 'Africa/Ndjamena',
+        'en': "N'Djamena, Abeche, Faya-Largeau",
+        'ru': 'Нджамена, Абеше, Файя-Ларжо',
+    },
+    {
+        'code': 'Africa/Niamey',
+        'en': 'Niamey, Zinder, Tahoua',
+        'ru': 'Ниамей, Зиндер, Тахуа',
+    },
+    {
+        'code': 'Africa/Porto-Novo',
+        'en': 'Cotonou, Djougou, Porto-Novo',
+        'ru': 'Котону, Джугу, Порто-Ново',
+    },
+    {
+        'code': 'Africa/Tunis',
+        'en': 'Tunis, Sfaks, Bizerte',
+        'ru': 'Тунис, Сфакс, Бизерта',
+    },
+    {
+        'code': 'Europe/Amsterdam',
+        'en': 'Amsterdam, Tilburg, Almere',
+        'ru': 'Амстердам, Тилбург, Алмере',
+    },
+    {
+        'code': 'Europe/Andorra',
+        'en': 'Andorra la Vella,Sant Julia de Loria,Encamp',
+        'ru': 'Андорра-ла-Велья,Сант-Жулиа-де-Лория,Энкам',
+    },
+    {
+        'code': 'Europe/Belgrade',
+        'en': 'Belgrade, Podgorica, Leskovac',
+        'ru': 'Белград, Подгорица, Лесковац',
+    },
+    {
+        'code': 'Europe/Berlin',
+        'en': 'Berlin, Hamburg, Munich',
+        'ru': 'Берлин, Гамбург, Мюнхен',
+    },
+    {
+        'code': 'Europe/Bratislava',
+        'en': 'Bratislava,Liptovsky Mikulas,Kosice',
+        'ru': 'Братислава,Липтовски-Микулаш,Кошице',
+    },
+    {
+        'code': 'Europe/Brussels',
+        'en': 'Charleroi, Brussels, Aalst',
+        'ru': 'Шарлеруа, Брюссель, Алст',
+    },
+    {
+        'code': 'Europe/Budapest',
+        'en': 'Budapest, Sopron, Hajduszoboszlo',
+        'ru': 'Будапешт, Шопрон, Хайдусобосло',
+    },
+    {
+        'code': 'Europe/Copenhagen',
+        'en': 'Copenhagen, Esbjerg, Randers',
+        'ru': 'Копенгаген, Эсбьерг, Раннерс',
+    },
+    {'code': 'Europe/Gibraltar', 'en': 'Gibraltar', 'ru': 'Гибралтар'},
+    {
+        'code': 'Europe/Ljubljana',
+        'en': 'Ljubljana, Maribor, Kranj',
+        'ru': 'Любляна, Марибор, Крань',
+    },
+    {
+        'code': 'Europe/Luxembourg',
+        'en': 'Luxembourg, Diekirch, Grevenmacher',
+        'ru': 'Люксембург, Дикирх, Гревенмахер',
+    },
+    {
+        'code': 'Europe/Madrid',
+        'en': 'Madrid, Barcelona, Valencia',
+        'ru': 'Мадрид, Барселона, Валенсия',
+    },
+    {
+        'code': 'Europe/Malta',
+        'en': "Saint Paul's Bay, Mellieha, Valletta",
+        'ru': 'Сент-Полс-Бэй, Меллиеха, Валлетта',
+    },
+    {'code': 'Europe/Monaco', 'en': 'Monaco,Monte Carlo', 'ru': 'Монако,Монте-Карло'},
+    {
+        'code': 'Europe/Oslo',
+        'en': 'Oslo, Sandnes, Ålesund',
+        'ru': 'Осло, Саннес, Олесунн',
+    },
+    {
+        'code': 'Europe/Paris',
+        'en': 'Paris, Marseilles, Lyon',
+        'ru': 'Париж, Марсель, Лион',
+    },
+    {
+        'code': 'Europe/Prague',
+        'en': 'Prague, Jihlava, Bayeux',
+        'ru': 'Прага, Йиглава, Байё',
+    },
+    {'code': 'Europe/Rome', 'en': 'Rome, Milan, Naples', 'ru': 'Рим, Милан, Неаполь'},
+    {
+        'code': 'Europe/San_Marino',
+        'en': 'San Marino,Acquaviva',
+        'ru': 'Сан-Марино,Аккуавива',
+    },
+    {'code': 'Europe/Sarajevo', 'en': 'Sarajevo,Livno', 'ru': 'Сараево,Ливно'},
+    {
+        'code': 'Europe/Skopje',
+        'en': 'Skopje, Zenica, Mostar',
+        'ru': 'Скопье, Зеница, Мостар',
+    },
+    {
+        'code': 'Europe/Stockholm',
+        'en': 'Stockholm, Lund, Boras',
+        'ru': 'Стокгольм, Лунд, Бурос',
+    },
+    {
+        'code': 'Europe/Tirane',
+        'en': 'Tirana, Sarande, Himare',
+        'ru': 'Тирана, Саранда, Химара',
+    },
+    {'code': 'Europe/Vaduz', 'en': 'Vaduz,Gamprin', 'ru': 'Вадуц,Гамприн'},
+    {'code': 'Europe/Vatican', 'en': 'Vatican', 'ru': 'Ватикан'},
+    {
+        'code': 'Europe/Vienna',
+        'en': 'Vienna, Wels, Wiener Neustadt',
+        'ru': 'Вена, Вельс, Винер-Нойштадт',
+    },
+    {
+        'code': 'Europe/Warsaw',
+        'en': 'Warsaw, Lodz, Krakow',
+        'ru': 'Варшава, Лодзь, Краков',
+    },
+    {
+        'code': 'Europe/Zagreb',
+        'en': 'Zagreb, Rijeka, Vinkovci',
+        'ru': 'Загреб, Риека, Винковцы',
+    },
+    {
+        'code': 'Europe/Zurich',
+        'en': 'Bern, Winterthur, Thun',
+        'ru': 'Берн, Винтертур, Тун',
+    },
+    {'code': 'Africa/Bujumbura', 'en': 'Bujumbura', 'ru': 'Бужумбура'},
+    {
+        'code': 'Africa/Cairo',
+        'en': 'Cairo, Alexandria, Giza',
+        'ru': 'Каир, Александрия, Гиза',
+    },
+    {
+        'code': 'Africa/Gaborone',
+        'en': 'Gaborone, Francistown, Molepolole',
+        'ru': 'Габороне, Франсистаун, Молепололе',
+    },
+    {
+        'code': 'Africa/Harare',
+        'en': 'Bulawayo, Harare, Gweru',
+        'ru': 'Булавайо, Хараре, Гверу',
+    },
+    {
+        'code': 'Africa/Johannesburg',
+        'en': 'Johannesburg, Capetown, Pretoria',
+        'ru': 'Йоханнесбург, Кейптаун, Претория',
+    },
+    {
+        'code': 'Africa/Khartoum',
+        'en': 'Omdurman, Khartoum, Nyala',
+        'ru': 'Омдурман, Хартум, Ньяла',
+    },
+    {'code': 'Africa/Kigali', 'en': 'Kigali', 'ru': 'Кигали'},
+    {
+        'code': 'Africa/Lusaka',
+        'en': 'Lusaka, Lilongwe, Blantyre',
+        'ru': 'Лусака, Лилонгве, Блантайр',
+    },
+    {
+        'code': 'Africa/Maputo',
+        'en': 'Maputo, Nampula, Beira',
+        'ru': 'Мапуту, Нампула, Бейра',
+    },
+    {'code': 'Africa/Maseru', 'en': 'Maseru', 'ru': 'Масеру'},
+    {'code': 'Africa/Mbabane', 'en': 'Mbabane,Manzini', 'ru': 'Мбабане,Манзини'},
+    {
+        'code': 'Africa/Tripoli',
+        'en': 'Tripoli, Benghazi, Al-Bayda',
+        'ru': 'Триполи, Бенгази, Аль-Байда',
+    },
+    {
+        'code': 'Africa/Windhoek',
+        'en': 'Windhoek, Walvis Bay, Rundu',
+        'ru': 'Виндхук, Уолфиш-Бей, Рунду',
+    },
+    {
+        'code': 'Asia/Beirut',
+        'en': 'Beirut, Nabatieh, Zahlé',
+        'ru': 'Бейрут, Эн-Набатия, Захле',
+    },
+    {'code': 'Asia/Gaza', 'en': 'Ramallah,Gaza', 'ru': 'Рамалла,Газа'},
+    {
+        'code': 'Asia/Jerusalem',
+        'en': 'Jerusalem, Tel Aviv, Haifa',
+        'ru': 'Иерусалим, Тель-Авив, Хайфа',
+    },
+    {
+        'code': 'Asia/Nicosia',
+        'en': 'Nicosia, Paralimni, Lapithos',
+        'ru': 'Никосия, Паралимни, Лапитос',
+    },
+    {
+        'code': 'Europe/Athens',
+        'en': 'Athens, Piraeus, Volos',
+        'ru': 'Афины, Пирей, Волос',
+    },
+    {
+        'code': 'Europe/Bucharest',
+        'en': 'Bucharest, Dorohoi, Gura Humorului',
+        'ru': 'Бухарест, Дорохой, Гура-Гуморулуй',
+    },
+    {
+        'code': 'Europe/Helsinki',
+        'en': 'Helsinki, Espoo, Vantaa',
+        'ru': 'Хельсинки, Эспоо, Вантаа',
+    },
+    {
+        'code': 'Europe/Kaliningrad',
+        'en': 'Kaliningrad, Sovetsk, Chernyahovsk',
+        'ru': 'Калининград, Советск, Черняховск',
+    },
+    {
+        'code': 'Europe/Kiev',
+        'en': 'Kyiv, Kharkiv, Dnipro',
+        'ru': 'Киев, Харьков, Днепр',
+    },
+    {
+        'code': 'Europe/Riga',
+        'en': 'Riga, Daugavpils, Liepaya',
+        'ru': 'Рига, Даугавпилс, Лиепая',
+    },
+    {
+        'code': 'Europe/Sofia',
+        'en': 'Sofia, Varna, Targovishte',
+        'ru': 'София, Варна, Тырговиште',
+    },
+    {
+        'code': 'Europe/Tallinn',
+        'en': 'Tallinn, Tartu, Narva',
+        'ru': 'Таллин, Тарту, Нарва',
+    },
+    {
+        'code': 'Europe/Vilnius',
+        'en': 'Vilnius, Kaunas, Klaipeda',
+        'ru': 'Вильнюс, Каунас, Клайпеда',
+    },
+    {
+        'code': 'Africa/Addis_Ababa',
+        'en': 'Addis Ababa, Dire Dawa, Gondar',
+        'ru': 'Аддис-Абеба, Дыре-Дауа, Гондэр',
+    },
+    {'code': 'Africa/Asmera', 'en': 'Asmara,Massawa', 'ru': 'Асмэра,Массауа'},
+    {
+        'code': 'Africa/Dar_es_Salaam',
+        'en': 'Dar es Salaam, Mwanza, Arusha',
+        'ru': 'Дар-эс-Салам, Мванза, Аруша',
+    },
+    {'code': 'Africa/Djibouti', 'en': 'Djibouti', 'ru': 'Джибути'},
+    {
+        'code': 'Africa/Kampala',
+        'en': 'Kampala, Jinja, Entebbe',
+        'ru': 'Кампала, Джинджа, Энтеббе',
+    },
+    {
+        'code': 'Africa/Mogadishu',
+        'en': 'Mogadishu, Hargeysa, Berbera',
+        'ru': 'Могадишо, Харгейса, Бербера',
+    },
+    {
+        'code': 'Africa/Nairobi',
+        'en': 'Nairobi, Mombasa, Kisumu',
+        'ru': 'Найроби, Момбаса, Кисуму',
+    },
+    {
+        'code': 'Asia/Aden',
+        'en': "Sanaa, Al Bayda, 'Amran",
+        'ru': 'Сана, Эль-Бейда, Амран',
+    },
+    {'code': 'Asia/Amman', 'en': "Amman,Ma'an,Aqaba", 'ru': 'Амман,Маан,Акаба'},
+    {
+        'code': 'Asia/Baghdad',
+        'en': 'Baghdad, Basra, Mosul',
+        'ru': 'Багдад, Басра, Мосул',
+    },
+    {'code': 'Asia/Bahrain', 'en': 'Doha,Manama', 'ru': 'Доха,Манама'},
+    {
+        'code': 'Asia/Damascus',
+        'en': 'Aleppo, Damascus, Hasakah',
+        'ru': 'Алеппо, Дамаск, Эль-Хасака',
+    },
+    {'code': 'Asia/Kuwait', 'en': 'Al-Kuwait', 'ru': 'Эль-Кувейт'},
+    {
+        'code': 'Asia/Riyadh',
+        'en': 'Riyadh, Jeddah, Mecca',
+        'ru': 'Эр-Рияд, Джидда, Мекка',
+    },
+    {
+        'code': 'Europe/Istanbul',
+        'en': 'Istanbul, Ankara, Izmir',
+        'ru': 'Стамбул, Анкара, Измир',
+    },
+    {
+        'code': 'Europe/Minsk',
+        'en': 'Minsk, Gomel, Vitebsk',
+        'ru': 'Минск, Гомель, Витебск',
+    },
+    {
+        'code': 'Europe/Moscow',
+        'en': 'Moscow, Saint Petersburg, Nizhny Novgorod',
+        'ru': 'Москва, Санкт-Петербург, Нижний Новгород',
+    },
+    {
+        'code': 'Europe/Volgograd',
+        'en': 'Volgograd, Volzhskiy, Kamishin',
+        'ru': 'Волгоград, Волжский, Камышин',
+    },
+    {
+        'code': 'Indian/Antananarivo',
+        'en': 'Antananarivo, Toamasina, Antsirabe',
+        'ru': 'Антананариву, Туамасина, Анцирабе',
+    },
+    {'code': 'Indian/Comoro', 'en': 'Moroni', 'ru': 'Морони'},
+    {
+        'code': 'Asia/Tehran',
+        'en': 'Tehran, Mashhad, Esfahan',
+        'ru': 'Тегеран, Мешхед, Исфахан',
+    },
+    {
+        'code': 'Asia/Baku',
+        'en': 'Baku, Sumgait, Gyandja',
+        'ru': 'Баку, Сумгаит, Гянджа',
+    },
+    {
+        'code': 'Asia/Dubai',
+        'en': 'Dubai,Abu Dhabi,Sharjah',
+        'ru': 'Дубай,Абу-Даби,Шарджа',
+    },
+    {
+        'code': 'Asia/Muscat',
+        'en': 'Muscat, As Seeb, Hayma',
+        'ru': 'Маскат, Эс-Сиб, Хайма',
+    },
+    {
+        'code': 'Asia/Tbilisi',
+        'en': 'Tbilisi, Batumi, Kutaisi',
+        'ru': 'Тбилиси, Батуми, Кутаиси',
+    },
+    {
+        'code': 'Asia/Yerevan',
+        'en': 'Yerevan, Gyumri, Vanadzor',
+        'ru': 'Ереван, Гюмри, Ванадзор',
+    },
+    {
+        'code': 'Europe/Astrakhan',
+        'en': 'Astrahan, Ahtubinsk, Znamensk',
+        'ru': 'Астрахань, Ахтубинск, Знаменск',
+    },
+    {
+        'code': 'Europe/Samara',
+        'en': 'Samara, Togliatti, Izhevsk',
+        'ru': 'Самара, Тольятти, Ижевск',
+    },
+    {
+        'code': 'Europe/Saratov',
+        'en': 'Saratov, Engels, Balakovo',
+        'ru': 'Саратов, Энгельс, Балаково',
+    },
+    {
+        'code': 'Europe/Ulyanovsk',
+        'en': 'Ulyanovsk, Dimitrovgrad, Inza',
+        'ru': 'Ульяновск, Димитровград, Инза',
+    },
+    {
+        'code': 'Indian/Mauritius',
+        'en': 'Port Louis, Vacoas-Phoenix, Victoria',
+        'ru': 'Порт-Луи, Вакоа-Феникс, Виктория',
+    },
+    {
+        'code': 'Indian/Reunion',
+        'en': 'Saint-Denis,Saint-Pierre,Cilaos',
+        'ru': 'Сен-Дени,Сен-Пьер,Силао',
+    },
+    {
+        'code': 'Asia/Kabul',
+        'en': 'Kabul, Kandahar, Herat',
+        'ru': 'Кабул, Кандагар, Герат',
+    },
+    {'code': 'Asia/Aqtau', 'en': 'Aktau', 'ru': 'Актау'},
+    {
+        'code': 'Asia/Aqtobe',
+        'en': 'Aktobe, Uralsk, Atyrau',
+        'ru': 'Актобе, Уральск, Атырау',
+    },
+    {
+        'code': 'Asia/Ashgabat',
+        'en': 'Ashgabat, Turkmenabad, Dashoguz',
+        'ru': 'Ашхабад, Туркменабад, Дашогуз',
+    },
+    {
+        'code': 'Asia/Dushanbe',
+        'en': 'Dushanbe, Khujand, Kulob',
+        'ru': 'Душанбе, Худжанд, Куляб',
+    },
+    {
+        'code': 'Asia/Karachi',
+        'en': 'Karachi, Lahore, Faisalabad',
+        'ru': 'Карачи, Лахор, Фейсалабад',
+    },
+    {
+        'code': 'Asia/Qyzylorda',
+        'en': 'Kyzylorda, Baikonur, Aralsk',
+        'ru': 'Кызылорда, Байконур, Аральск',
+    },
+    {
+        'code': 'Asia/Tashkent',
+        'en': 'Tashkent, Namangan, Andijan',
+        'ru': 'Ташкент, Наманган, Андижан',
+    },
+    {
+        'code': 'Asia/Yekaterinburg',
+        'en': 'Yekaterinburg, Chelyabinsk, Ufa',
+        'ru': 'Екатеринбург, Челябинск, Уфа',
+    },
+    {
+        'code': 'Indian/Maldives',
+        'en': 'Male, Addu City, Fuvahmulah',
+        'ru': 'Мале, Адду, Фувахмулах',
+    },
+    {
+        'code': 'Asia/Colombo',
+        'en': 'Polonnaruwa, Dehiwala-Mount Lavinia, Negombo',
+        'ru': 'Полоннарува, Дехивала-Маунт-Лавиния, Негомбо',
+    },
+    {
+        'code': 'Asia/Kolkata',
+        'en': 'Mumbai, Delhi, Bangalore',
+        'ru': 'Мумбаи, Дели, Бангалор',
+    },
+    {
+        'code': 'Asia/Kathmandu',
+        'en': 'Kathmandu, Pokhara, Bharatpur',
+        'ru': 'Катманду, Покхара, Бхаратпур',
+    },
+    {
+        'code': 'Asia/Almaty',
+        'en': 'Almaty, Astana, Chimkent',
+        'ru': 'Алматы, Астана, Шымкент',
+    },
+    {
+        'code': 'Asia/Bishkek',
+        'en': 'Bishkek, Osh, Djalal-Abad',
+        'ru': 'Бишкек, Ош, Джалал-Абад',
+    },
+    {
+        'code': 'Asia/Dhaka',
+        'en': 'Dhaka, Chittagong, Narayanganj',
+        'ru': 'Дакка, Читтагонг, Нараянгандж',
+    },
+    {'code': 'Asia/Omsk', 'en': 'Omsk, Tara, Isilkul', 'ru': 'Омск, Тара, Исилькуль'},
+    {'code': 'Asia/Thimphu', 'en': 'Thimphu', 'ru': 'Тхимпху'},
+    {
+        'code': 'Asia/Rangoon',
+        'en': 'Yangon, Mandalay, Naypyidaw',
+        'ru': 'Янгон, Мандалай, Нейпьидо',
+    },
+    {'code': 'Indian/Cocos', 'en': 'West Island', 'ru': 'Уэст-Айленд'},
+    {
+        'code': 'Asia/Bangkok',
+        'en': 'Bangkok, Samut Prakan, Samut Songkhram',
+        'ru': 'Бангкок, Самутпракан, Самутсонгкхрам',
+    },
+    {
+        'code': 'Asia/Barnaul',
+        'en': 'Barnaul, Biysk, Rubtsovsk',
+        'ru': 'Барнаул, Бийск, Рубцовск',
+    },
+    {
+        'code': 'Asia/Jakarta',
+        'en': 'Jakarta, Surabaya, Bandung',
+        'ru': 'Джакарта, Сурабая, Бандунг',
+    },
+    {
+        'code': 'Asia/Krasnoyarsk',
+        'en': 'Krasnoyarsk, Abakan, Norilsk',
+        'ru': 'Красноярск, Абакан, Норильск',
+    },
+    {
+        'code': 'Asia/Novokuznetsk',
+        'en': 'Kemerovo, Novokuznetsk, Prokopevsk',
+        'ru': 'Кемерово, Новокузнецк, Прокопьевск',
+    },
+    {
+        'code': 'Asia/Novosibirsk',
+        'en': 'Novosibirsk, Berdsk, Iskitim',
+        'ru': 'Новосибирск, Бердск, Искитим',
+    },
+    {
+        'code': 'Asia/Phnom_Penh',
+        'en': 'Phnom Penh,Battambang,Sihanoukville',
+        'ru': 'Пномпень,Баттамбанг,Сиануквиль',
+    },
+    {
+        'code': 'Asia/Tomsk',
+        'en': 'Tomsk, Seversk, Strezgevoy',
+        'ru': 'Томск, Северск, Стрежевой',
+    },
+    {
+        'code': 'Asia/Vientiane',
+        'en': 'Ho Chi Minh, Hanoi, Haiphong',
+        'ru': 'Хошимин, Ханой, Хайфон',
+    },
+    {
+        'code': 'Asia/Brunei',
+        'en': 'Bandar Seri Begawan,Kuala Belait',
+        'ru': 'Бандар-Сери-Бегаван,Куала-Белаит',
+    },
+    {'code': 'Asia/Harbin', 'en': 'Harbin', 'ru': 'Харбин'},
+    {
+        'code': 'Asia/Irkutsk',
+        'en': 'Irkutsk, Ulan-Ude, Bratsk',
+        'ru': 'Иркутск, Улан-Удэ, Братск',
+    },
+    {
+        'code': 'Asia/Kuala_Lumpur',
+        'en': 'Kuala Lumpur, Ipoh, Shah Alam',
+        'ru': 'Куала-Лумпур, Ипох, Шах-Алам',
+    },
+    {'code': 'Asia/Macau', 'en': 'Macau', 'ru': 'Макао (Аомынь)'},
+    {
+        'code': 'Asia/Makassar',
+        'en': 'Makassar, Sukawati, Tanjung Selor',
+        'ru': 'Макасар, Сукавати, Танджунгселор',
+    },
+    {
+        'code': 'Asia/Manila',
+        'en': 'Quezon City, Davao, Manila',
+        'ru': 'Кесон-Сити, Давао, Манила',
+    },
+    {
+        'code': 'Asia/Shanghai',
+        'en': 'Chongqing, Shanghai, Beijing',
+        'ru': 'Чунцин, Шанхай, Пекин',
+    },
+    {'code': 'Asia/Singapore', 'en': 'Singapore', 'ru': 'Сингапур'},
+    {'code': 'Asia/Taipei', 'en': 'Nanjing', 'ru': 'Нанкин'},
+    {
+        'code': 'Asia/Ulaanbaatar',
+        'en': 'Ulan Bator, Sainshand, Arvaikheer',
+        'ru': 'Улан-Батор, Сайншанд, Арвайхээр',
+    },
+    {
+        'code': 'Australia/Perth',
+        'en': 'Perth, Rockingham, Bunbury',
+        'ru': 'Перт, Рокингем, Банбери',
+    },
+    {
+        'code': 'Asia/Chita',
+        'en': 'Chita, Krasnokamensk, Borzya',
+        'ru': 'Чита, Краснокаменск, Борзя',
+    },
+    {'code': 'Asia/Dili', 'en': 'Dili', 'ru': 'Дили'},
+    {'code': 'Asia/Jayapura', 'en': 'Merauke', 'ru': 'Мерауке'},
+    {'code': 'Asia/Pyongyang', 'en': 'Pyongyang,Chongjin', 'ru': 'Пхеньян,Чхонджин'},
+    {'code': 'Asia/Seoul', 'en': 'Seoul, Busan, Incheon', 'ru': 'Сеул, Пусан, Инчхон'},
+    {
+        'code': 'Asia/Tokyo',
+        'en': 'Tokyo, Yokohama, Osaka',
+        'ru': 'Токио, Йокогама, Осака',
+    },
+    {
+        'code': 'Asia/Yakutsk',
+        'en': 'Yakutsk, Blagoveshchensk, Belogorsk',
+        'ru': 'Якутск, Благовещенск, Белогорск',
+    },
+    {'code': 'Pacific/Palau', 'en': 'Koror,Ngerulmud', 'ru': 'Корор,Нгерулмуд'},
+    {
+        'code': 'Australia/Darwin',
+        'en': 'Darwin, Alice Springs, Katherine',
+        'ru': 'Дарвин, Алис-Спрингс, Кэтрин',
+    },
+    {
+        'code': 'Asia/Vladivostok',
+        'en': 'Khabarovsk, Vladivostok, Komsomolsk-at-Amur',
+        'ru': 'Хабаровск, Владивосток, Комсомольск-на-Амуре',
+    },
+    {
+        'code': 'Australia/Brisbane',
+        'en': 'Brisbane, Gold Coast, Sunshine Coast',
+        'ru': 'Брисбен, Голд-Кост, Саншайн-Кост',
+    },
+    {'code': 'Pacific/Guam', 'en': 'Hagatna', 'ru': 'Хагатна'},
+    {
+        'code': 'Pacific/Port_Moresby',
+        'en': 'Port Moresby, Lae, Mount-Hagen',
+        'ru': 'Порт-Морсби, Лаэ, Маунт-Хаген',
+    },
+    {'code': 'Pacific/Yap', 'en': 'Weno,Colonia,Palikir', 'ru': 'Вено,Колониа,Паликир'},
+    {
+        'code': 'Australia/Adelaide',
+        'en': 'Adelaide, Mount Gambier, Whyalla',
+        'ru': 'Аделаида, Маунт-Гамбир, Уайалла',
+    },
+    {'code': 'Australia/Broken_Hill', 'en': 'Broken Hill', 'ru': 'Брокен Хилл'},
+    {'code': 'Asia/Magadan', 'en': 'Magadan,Susuman', 'ru': 'Магадан,Сусуман'},
+    {
+        'code': 'Asia/Sakhalin',
+        'en': 'Yuzhno-Sakhalinsk, Korsakov, Holmsk',
+        'ru': 'Южно-Сахалинск, Корсаков, Холмск',
+    },
+    {
+        'code': 'Asia/Srednekolymsk',
+        'en': 'Srednekolymsk,Severo-Kurilsk',
+        'ru': 'Среднеколымск,Северо-Курильск',
+    },
+    {
+        'code': 'Australia/Hobart',
+        'en': 'Hobart, Launceston, Devonport',
+        'ru': 'Хобарт, Лонсестон, Девонпорт',
+    },
+    {
+        'code': 'Australia/Melbourne',
+        'en': 'Melbourne, Geelong, Ballarat',
+        'ru': 'Мельбурн, Джелонг, Балларат',
+    },
+    {
+        'code': 'Australia/Sydney',
+        'en': 'Sydney, Canberra, Wollongong',
+        'ru': 'Сидней, Канберра, Вуллонгонг',
+    },
+    {
+        'code': 'Pacific/Efate',
+        'en': 'Honiara, Port Vila, Sola',
+        'ru': 'Хониара, Порт-Вила, Сола',
+    },
+    {'code': 'Pacific/Noumea', 'en': 'Noumea,Koumac,We', 'ru': 'Нумеа,Кумак,Ве'},
+    {
+        'code': 'Asia/Kamchatka',
+        'en': 'Petropavlovsk, Elizovo, Viluchinsk',
+        'ru': 'Петропавловск-Камчатский, Елизово, Вилючинск',
+    },
+    {'code': 'Pacific/Fiji', 'en': 'Suva, Nadi, Labasa', 'ru': 'Сува, Нанди, Лабаса'},
+    {'code': 'Pacific/Funafuti', 'en': 'Funafuti', 'ru': 'Фунафути'},
+    {'code': 'Pacific/Majuro', 'en': 'Majuro', 'ru': 'Маджуро'},
+    {'code': 'Pacific/Nauru', 'en': 'Yaren District', 'ru': 'Ярен'},
+    {'code': 'Pacific/Norfolk', 'en': 'Kingston', 'ru': 'Кингстон'},
+    {
+        'code': 'Pacific/Tarawa',
+        'en': 'South Tarawa,Bairiki',
+        'ru': 'Южная Тарава,Байрики',
+    },
+    {'code': 'Pacific/Apia', 'en': 'Apia', 'ru': 'Апиа'},
+    {
+        'code': 'Pacific/Auckland',
+        'en': 'Auckland, Wellington, Christchurch',
+        'ru': 'Окленд, Веллингтон, Крайстчерч',
+    },
+    {
+        'code': 'Pacific/Tongatapu',
+        'en': 'Nukualofa,Neiafu,Pangai',
+        'ru': 'Нукуалофа,Нейафу,Пангаи',
+    },
+]
+
+
+@decorator_trace(name='services.timezone.get_all')
+async def get_all() -> list[models.Timezone]:
+    results = []
+    for timezone in TIMEZONE:
+        code = ZoneInfo(timezone['code'])
+        offset_dt = datetime.now(tz=code).strftime('%:z')
+        results.append(models.Timezone(timezone=str(code), offset=offset_dt, en=timezone['en'], ru=timezone['ru']))
+    return results

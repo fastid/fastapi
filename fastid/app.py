@@ -47,7 +47,7 @@ app = FastAPI(
         'name': 'MIT',
         'url': 'https://github.com/fastid/fastapi/blob/main/LICENSE',
     },
-    contact={'name': 'Github', 'url': 'https://github.com/fastid/'},
+    contact={'name': 'Github', 'url': settings.link_github},
     exception_handlers=exc_handlers,
 )
 
@@ -94,6 +94,7 @@ app.include_router(handlers.healthcheck.router)
 # Internal API
 app.include_router(internal.config.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
 app.include_router(internal.users.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
+# app.include_router(internal.otp.router, prefix='/api/v1/internal', tags=['Internal API'], include_in_schema=True)
 
 # API
 app.include_router(v1.users.router, prefix='/api/v1', tags=['Users'])

@@ -10,7 +10,8 @@ Phone = NewType('Phone', int)
 Email = NewType('Email', EmailStr)
 Password = NewType('Password', str)
 TokenID = NewType('TokenID', uuid.UUID)
-SessionID = NewType('SessionID', uuid.UUID)
+SessionID = NewType('SessionID', int)
+Username = NewType('Username', str)
 
 
 class Gender(enum.Enum):
