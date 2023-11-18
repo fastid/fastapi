@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, HttpUrl
+from pydantic import AnyUrl, BaseModel, ConfigDict, HttpUrl
 
 from .. import typing
 from ..settings import Captcha
@@ -72,3 +72,8 @@ class Session(CommonModel):
     session_key: str
     expires_at: datetime
     data: dict
+
+
+class OTP(CommonModel):
+    code: str
+    otpauth: AnyUrl

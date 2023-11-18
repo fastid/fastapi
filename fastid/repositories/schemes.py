@@ -183,6 +183,21 @@ class Sessions(Base):
     user: Mapped['Users'] = relationship('Users', foreign_keys=user_id, lazy='select')
 
 
+class OTP(Base):
+    __tablename__ = 'opt'
+
+    otp_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, sort_order=10)
+    code: Mapped[str] = mapped_column(String(32), sort_order=50)
+
+    user_id: Mapped[typing.UserID] = mapped_column(
+        Integer,
+        ForeignKey('users.user_id', onupdate='CASCADE', ondelete='CASCADE'),
+        nullable=True,
+        sort_order=70,
+    )
+    user: Mapped['Users'] = relationship('Users', foreign_keys=user_id, lazy='select')
+
+
 # class Permissions(Base):
 #     __tablename__ = 'permissions'
 #     permission_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

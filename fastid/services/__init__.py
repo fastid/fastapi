@@ -1,4 +1,4 @@
-from . import config, language, models, password_hasher, recaptcha, sendmail, session, timezone, tokens, users
+from . import config, language, models, otp, password_hasher, recaptcha, sendmail, session, timezone, tokens, users
 
 __all__ = [
     'recaptcha',
@@ -11,4 +11,5 @@ __all__ = [
     'language',
     'password_hasher',
     'timezone',
+    'otp',
 ]
